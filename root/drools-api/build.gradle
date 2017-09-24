@@ -1,7 +1,5 @@
 group = 'rules-api'
 
-description = ''
-
 apply plugin:'java'
 
 dependencies {
