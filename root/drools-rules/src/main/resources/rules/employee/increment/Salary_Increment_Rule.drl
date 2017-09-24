@@ -1,0 +1,53 @@
+package performance.rules
+
+
+import org.drools.domain.Employee;
+import org.drools.domain.Promotion;
+
+dialect "java" ;
+
+rule "default"
+when
+
+then
+System.out.println("Hello Drools");
+
+end
+
+rule "A grade"
+when
+$i: Employee(rating==1)
+then
+$i.setIncrement(10);
+
+end
+
+rule "B grade"
+when
+$i: Employee(rating==2)
+then
+$i.setIncrement(7);
+
+end
+
+rule "C grade"
+when
+$i: Employee(rating==3)
+then
+$i.setIncrement(5);
+end
+
+
+rule "D grade"
+when
+$i: Employee(rating==4)
+then
+$i.setIncrement(0);
+end
+
+rule "Entitle for promotion"
+when
+$i: Employee(rating==1)
+then
+insert(new Promotion($i.getEmpID(),$i.getEmpName()));
+end

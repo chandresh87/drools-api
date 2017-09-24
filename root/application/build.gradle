@@ -1,0 +1,6 @@
+group = 'com.application'
+description = ''
+dependencies {
+  compile project(':rules-api')
+  compile project(':rules-domain')
+}
