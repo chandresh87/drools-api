@@ -29,7 +29,6 @@ import org.kie.internal.utils.KieHelper;
  *
  * @author chandresh.mishra
  */
-
 public class RulesBaseTest {
 
   private KieServices kService;
