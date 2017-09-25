@@ -20,12 +20,8 @@ import rules.api.message.RulesRequest;
  *
  * @author chandresh.mishra
  */
-// @RunWith(SpringJUnit4ClassRunner.class)
-// @ContextConfiguration(classes = RulesConfig.class)
-
 public class RulesEngineTest {
 
-  // @Autowired
   @InjectMocks private RulesEngine rulesEngine = new RulesEngineImpl();
 
   @Mock private RulesEngineHelper rulesEngineHelper;
@@ -42,7 +38,7 @@ public class RulesEngineTest {
   }
 
   @Test(expectedExceptions = IllegalArgumentException.class)
-  public void testNullFactCheck() {
+  public void testNullFact() {
     List<Object> facts = new ArrayList<>();
     RulesRequest rulesRequestParam =
         new RulesRequest.RulesRequestBuilder(facts, false)
@@ -59,12 +55,25 @@ public class RulesEngineTest {
   }
 
   @Test(expectedExceptions = RulesApiException.class)
-  public void testDefaultSessionCheck() {
+  public void testDefaultSession() {
     List<Object> facts = new ArrayList<>();
     facts.add(new Object());
     RulesRequest rulesRequestParam =
         new RulesRequest.RulesRequestBuilder(facts, false).sessionName("ABC").build();
     when(this.rulesEngineHelper.getStatefulKieSession(rulesRequestParam)).thenReturn(null);
+    rulesEngine.fireRules(rulesRequestParam);
+  }
+
+  @Test(expectedExceptions = RulesApiException.class)
+  public void testStateLessSession() {
+    List<Object> facts = new ArrayList<>();
+    facts.add(new Object());
+    RulesRequest rulesRequestParam =
+        new RulesRequest.RulesRequestBuilder(facts, false)
+            .sessionName("ABC")
+            .sessionType(SessionType.STATELESS)
+            .build();
+    when(this.rulesEngineHelper.getStatelessKieSession(rulesRequestParam)).thenReturn(null);
     rulesEngine.fireRules(rulesRequestParam);
   }
 }

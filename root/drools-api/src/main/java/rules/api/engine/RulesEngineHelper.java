@@ -50,6 +50,13 @@ class RulesEngineHelper {
   public KieSession getStatefulKieSession(RulesRequest rulesRequestParams) {
 
     logger.traceEntry("START - method - [getStatefulKieSession(RulesRequest)]");
+
+    if (null == kContainer) {
+      logger.error("Can not initialise container");
+
+      throw new RulesApiException("an not initialise container");
+    }
+
     KieSession kSession = null;
 
     // Getting a default kiesession from kieBase if kiebase name is provided
@@ -87,6 +94,13 @@ class RulesEngineHelper {
   public StatelessKieSession getStatelessKieSession(RulesRequest rulesRequestParams) {
 
     logger.traceEntry("START - method - [getStatelessKieSession(RulesRequest)]");
+
+    if (null == kContainer) {
+      logger.error("Can not initialise container");
+
+      throw new RulesApiException("an not initialise container");
+    }
+
     StatelessKieSession statelessKieSession = null;
 
     // Getting a default session from kieBase if kiebase name is provided

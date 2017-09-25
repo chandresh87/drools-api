@@ -25,15 +25,20 @@
 	</Appenders>
 
 	<Loggers>
-		<Logger name="com.drools.api" level="info" additivity="true">
+		<Logger name="com.rules.api" level="info" additivity="true">
 			<appender-ref ref="fileLogger" level="info" />
 		</Logger>
-		<Root level="debug" additivity="false">
+		
+		 <logger name="org.springframework.core.env.StandardEnvironment">
+           <appender-ref ref="fileLogger" level="info" />
+        </logger>
+        
+		<Root level="info" additivity="false">
 			<appender-ref ref="fileLogger" />
 		</Root>
 	</Loggers>
 
 	<category name="org.drools">
-		<priority value="debug" />
+		<priority value="info" />
 	</category>
 </Configuration>

@@ -29,6 +29,7 @@ import org.kie.internal.utils.KieHelper;
  *
  * @author chandresh.mishra
  */
+
 public class RulesBaseTest {
 
   private KieServices kService;
@@ -36,6 +37,11 @@ public class RulesBaseTest {
 
   private Logger logger = LogManager.getLogger(this);
 
+  /**
+   * This method provides the default stateful kiesession
+   *
+   * @return KieSession
+   */
   protected KieSession createDefaultSession() {
 
     KieSession ksession = this.createContainer().newKieSession();
@@ -43,6 +49,24 @@ public class RulesBaseTest {
     return ksession;
   }
 
+  /**
+   * This method provides the default StatelessKieSession
+   *
+   * @return statelessKieSession
+   */
+  protected StatelessKieSession createDefaultStatelessSession() {
+
+    StatelessKieSession statelessKieSession = this.createContainer().newStatelessKieSession();
+    setAgendaListner(statelessKieSession);
+    return statelessKieSession;
+  }
+
+  /**
+   * This method gives the kiebase from the container
+   *
+   * @param KieBase name
+   * @return KieBase
+   */
   protected KieBase createKnowledgeBase(String name) {
     KieContainer kContainer = this.createContainer();
     KieBase kbase = kContainer.getKieBase(name);
@@ -54,6 +78,12 @@ public class RulesBaseTest {
     return kbase;
   }
 
+  /**
+   * This method returns a given session from container
+   *
+   * @param name
+   * @return KieSession
+   */
   protected KieSession createSession(String name) {
 
     KieContainer kContainer = this.createContainer();
@@ -66,6 +96,12 @@ public class RulesBaseTest {
     return ksession;
   }
 
+  /**
+   * This method gives a state less kiesession from container
+   *
+   * @param name
+   * @return StatelessKieSession
+   */
   protected StatelessKieSession createStatelessSession(String name) {
 
     KieContainer kContainer = this.createContainer();
@@ -75,16 +111,31 @@ public class RulesBaseTest {
       throw new IllegalArgumentException("Unknown Session with name '" + name + "'");
     }
 
-    ksession.addEventListener(
+    setAgendaListner(ksession);
+    return ksession;
+  }
+
+  /**
+   * Set agenda Listener to StatelessKieSession
+   *
+   * @param ksession
+   */
+  private void setAgendaListner(StatelessKieSession statelessKieSession) {
+    statelessKieSession.addEventListener(
         new DefaultAgendaEventListener() {
           @Override
           public void afterMatchFired(AfterMatchFiredEvent event) {
             logger.debug("Rules getting fired" + event.getMatch().getRule().getName());
           }
         });
-    return ksession;
   }
 
+  /**
+   * This method is used to test a particular drl file. It build a session using a given drl file.
+   *
+   * @param drl
+   * @return KieSession
+   */
   protected KieSession createKieSessionFromDRL(String drl) {
     KieHelper kieHelper = new KieHelper();
     kieHelper.addResource(ResourceFactory.newClassPathResource(drl), ResourceType.DRL);
@@ -104,6 +155,14 @@ public class RulesBaseTest {
     return ksession;
   }
 
+  /**
+   * It fires a rule using state full session and returns number of rules fired
+   *
+   * @param kSession
+   * @param facts
+   * @param globalElement
+   * @return Number of rules fired
+   */
   protected int fireRule(
       KieSession kSession, List<Object> facts, Map<String, Object> globalElement) {
     if (null != kSession && null != facts) {
@@ -120,6 +179,14 @@ public class RulesBaseTest {
     return kSession.fireAllRules();
   }
 
+  /**
+   * It fires a rule using state less session and returns number of rules fired
+   *
+   * @param statelessKieSession
+   * @param facts
+   * @param globalElement
+   * @return
+   */
   protected int fireRule(
       StatelessKieSession statelessKieSession,
       List<Object> facts,
@@ -147,14 +214,31 @@ public class RulesBaseTest {
     return (int) execResults.getValue("outFired");
   }
 
+  /**
+   * It is used to filter facts from session.
+   *
+   * @param ksession
+   * @param classType
+   * @return collection of facts
+   */
   protected <T> Collection<T> getFactsFromKieSession(KieSession ksession, Class<T> classType) {
     return (Collection<T>) ksession.getObjects(new ClassObjectFilter(classType));
   }
 
+  /**
+   * Destroy the session and free all the resources.
+   *
+   * @param kSession
+   */
   protected void destroy(KieSession kSession) {
     kSession.dispose();
   }
 
+  /**
+   * It builds the container using class path resources.
+   *
+   * @return KieContainer
+   */
   private KieContainer createContainer() {
 
     if (kContainer != null) {
@@ -187,12 +271,22 @@ public class RulesBaseTest {
     return kContainer;
   }
 
+  /**
+   * It gives a kieservice
+   *
+   * @return KieServices
+   */
   private KieServices getKieServices() {
     if (null == kService) kService = KieServices.Factory.get();
 
     return kService;
   }
 
+  /**
+   * This method sets the default agenda listener to a session
+   *
+   * @param kSession
+   */
   private void setDefaultListner(KieSession kSession) {
     kSession.addEventListener(
         new DefaultAgendaEventListener() {
