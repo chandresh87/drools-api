@@ -33,9 +33,9 @@ class RulesEngineHelper {
 
   @Autowired private KieContainer kContainer;
 
-  @Autowired private RuleRuntimeListener ruleRuntimeListener;
+  //@Autowired private RuleRuntimeListener ruleRuntimeListener;
 
-  @Autowired private RuleAgendaListener ruleAgendaListner;
+  //@Autowired private RuleAgendaListener ruleAgendaListner;
 
   private Logger logger = LogManager.getLogger(this);
 
@@ -148,6 +148,13 @@ class RulesEngineHelper {
       int numberOfFiredRules = 0;
       List<Object> factsFromSession = null;
 
+      RuleRuntimeListener ruleRuntimeListener = new RuleRuntimeListener();
+
+      RuleAgendaListener ruleAgendaListner = new RuleAgendaListener();
+      //Adding the listener to session
+      kSession.addEventListener(ruleRuntimeListener);
+      kSession.addEventListener(ruleAgendaListner);
+
       // Setting global variables and Services
       setGlobalElement(kSession, droolsParam.getGlobalElement());
 
@@ -156,7 +163,7 @@ class RulesEngineHelper {
 
       if (!CollectionUtils.isEmpty(returnedFactsClass)) {
         // filter the facts that has been returned from session
-        factsFromSession = filterFacts(returnedFactsClass);
+        factsFromSession = filterFacts(ruleRuntimeListener, returnedFactsClass);
       }
       // disposing the session
       kSession.dispose();
@@ -184,6 +191,10 @@ class RulesEngineHelper {
 
     logger.traceEntry("START - method - [fireRuleStateless(KieSession,RulesRequest,List<Class>)]");
 
+    RuleRuntimeListener ruleRuntimeListener = new RuleRuntimeListener();
+
+    RuleAgendaListener ruleAgendaListner = new RuleAgendaListener();
+
     if (null != statelessKieSession && null != rulesRequest) {
       int numberOfFiredRules = 0;
       List<Object> factsFromSession = null;
@@ -210,7 +221,7 @@ class RulesEngineHelper {
 
       //Filtering the facts that would be returned as a part of response
       if (!CollectionUtils.isEmpty(returnedFactsClass)) {
-        factsFromSession = filterFacts(returnedFactsClass);
+        factsFromSession = filterFacts(ruleRuntimeListener, returnedFactsClass);
       }
 
       logger.traceEntry(
@@ -231,10 +242,6 @@ class RulesEngineHelper {
    */
   private int fireRulesWithFact(KieSession kSession, List<Object> facts) {
 
-    //Adding the listener to session
-    kSession.addEventListener(ruleRuntimeListener);
-    kSession.addEventListener(ruleAgendaListner);
-
     //Adding all the facts to the session
     facts.forEach(kSession::insert);
     // firing the rules
@@ -247,7 +254,8 @@ class RulesEngineHelper {
    * @param returned Facts Class
    * @return list of objects
    */
-  private List<Object> filterFacts(List<Class> returnedFactsClass) {
+  private List<Object> filterFacts(
+      RuleRuntimeListener ruleRuntimeListener, List<Class> returnedFactsClass) {
     return ruleRuntimeListener
         .getNewObjectInsterted()
         .stream()

@@ -9,7 +9,6 @@ import org.kie.api.event.rule.ObjectDeletedEvent;
 import org.kie.api.event.rule.ObjectInsertedEvent;
 import org.kie.api.event.rule.ObjectUpdatedEvent;
 import org.kie.api.event.rule.RuleRuntimeEventListener;
-import org.springframework.stereotype.Component;
 
 /**
  * This class act as a rule runtime listener.It has method to collect all the facts inserted in
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Component;
  *
  * @author chandresh.mishra
  */
-@Component
 public class RuleRuntimeListener implements RuleRuntimeEventListener {
 
   //List of all the facts inserted

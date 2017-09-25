@@ -12,7 +12,6 @@ import org.kie.api.event.rule.MatchCancelledEvent;
 import org.kie.api.event.rule.MatchCreatedEvent;
 import org.kie.api.event.rule.RuleFlowGroupActivatedEvent;
 import org.kie.api.event.rule.RuleFlowGroupDeactivatedEvent;
-import org.springframework.stereotype.Component;
 
 /**
  * This class act as a rule agenda listener.It would be used for the auditing to print all the rules
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Component;
  *
  * @author chandresh.mishra
  */
-@Component
 public class RuleAgendaListener implements AgendaEventListener {
 
   private Logger log = LogManager.getLogger(this);
