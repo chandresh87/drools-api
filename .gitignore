@@ -82,3 +82,5 @@ gradle-app.setting
 #ignore intellij files
 .idea/
 **/node_modules/
+
+.sonarlint/**

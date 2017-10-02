@@ -2,7 +2,6 @@ package rules.api.message;
 
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.collections4.CollectionUtils;
 import rules.api.enums.SessionType;
 
 /**
@@ -25,19 +24,33 @@ public class RulesRequest {
   // Build session by using kiebase name or kieSession name.It is mandatory field.
   private boolean buildSessionByKieBase;
 
+  public RulesRequest() { // default constructor
+  }
+
   /**
    * Parameterised constructor for RulesRequest
    *
+   * @param sessionName
+   * @param kieBasename
+   * @param sessionType
    * @param facts
+   * @param globalElement
    * @param buildSessionByKieBase
    */
-  public RulesRequest(List<Object> facts, boolean buildSessionByKieBase) {
+  public RulesRequest(
+      String sessionName,
+      String kieBasename,
+      SessionType sessionType,
+      List<Object> facts,
+      Map<String, Object> globalElement,
+      boolean buildSessionByKieBase) {
+    super();
+    this.sessionName = sessionName;
+    this.kieBasename = kieBasename;
+    this.sessionType = sessionType;
     this.facts = facts;
+    this.globalElement = globalElement;
     this.buildSessionByKieBase = buildSessionByKieBase;
-
-    if (CollectionUtils.isEmpty(facts)) {
-      throw new IllegalArgumentException("facts cannot be null or empty");
-    }
   }
 
   /** @return the kieBasename */
@@ -70,6 +83,36 @@ public class RulesRequest {
     return globalElement;
   }
 
+  /** @param sessionName the sessionName to set */
+  public void setSessionName(String sessionName) {
+    this.sessionName = sessionName;
+  }
+
+  /** @param kieBasename the kieBasename to set */
+  public void setKieBasename(String kieBasename) {
+    this.kieBasename = kieBasename;
+  }
+
+  /** @param sessionType the sessionType to set */
+  public void setSessionType(SessionType sessionType) {
+    this.sessionType = sessionType;
+  }
+
+  /** @param facts the facts to set */
+  public void setFacts(List<Object> facts) {
+    this.facts = facts;
+  }
+
+  /** @param globalElement the globalElement to set */
+  public void setGlobalElement(Map<String, Object> globalElement) {
+    this.globalElement = globalElement;
+  }
+
+  /** @param buildSessionByKieBase the buildSessionByKieBase to set */
+  public void setBuildSessionByKieBase(boolean buildSessionByKieBase) {
+    this.buildSessionByKieBase = buildSessionByKieBase;
+  }
+
   // Builder pattern
   public static class RulesRequestBuilder {
 
@@ -80,9 +123,18 @@ public class RulesRequest {
     private Map<String, Object> globalElement;
     private boolean buildSessionByKieBase;
 
-    public RulesRequestBuilder(List<Object> facts, boolean buildSessionByKieBase) {
+    public RulesRequestBuilder() {
+      // default constructor
+    }
+
+    public RulesRequestBuilder facts(List<Object> facts) {
       this.facts = facts;
+      return this;
+    }
+
+    public RulesRequestBuilder buildSessionByKieBase(boolean buildSessionByKieBase) {
       this.buildSessionByKieBase = buildSessionByKieBase;
+      return this;
     }
 
     public RulesRequestBuilder sessionName(String sessionName) {
@@ -106,11 +158,14 @@ public class RulesRequest {
     }
 
     public RulesRequest build() {
-      RulesRequest rulesRequest = new RulesRequest(this.facts, this.buildSessionByKieBase);
+
+      RulesRequest rulesRequest = new RulesRequest();
       rulesRequest.globalElement = this.globalElement;
       rulesRequest.sessionName = this.sessionName;
       rulesRequest.sessionType = this.sessionType;
       rulesRequest.kieBasename = this.kieBasename;
+      rulesRequest.facts = this.facts;
+      rulesRequest.buildSessionByKieBase = this.buildSessionByKieBase;
 
       return rulesRequest;
     }

@@ -33,10 +33,6 @@ class RulesEngineHelper {
 
   @Autowired private KieContainer kContainer;
 
-  //@Autowired private RuleRuntimeListener ruleRuntimeListener;
-
-  //@Autowired private RuleAgendaListener ruleAgendaListner;
-
   private Logger logger = LogManager.getLogger(this);
 
   private KieServices kieService = KieServices.Factory.get();
@@ -145,12 +141,14 @@ class RulesEngineHelper {
     logger.traceEntry("START - method - [fireStatefulRules(KieSession,RulesRequest,List<Class>)]");
 
     if (null != kSession && null != droolsParam) {
+
       int numberOfFiredRules = 0;
       List<Object> factsFromSession = null;
 
       RuleRuntimeListener ruleRuntimeListener = new RuleRuntimeListener();
 
       RuleAgendaListener ruleAgendaListner = new RuleAgendaListener();
+
       //Adding the listener to session
       kSession.addEventListener(ruleRuntimeListener);
       kSession.addEventListener(ruleAgendaListner);
@@ -164,9 +162,11 @@ class RulesEngineHelper {
       if (!CollectionUtils.isEmpty(returnedFactsClass)) {
         // filter the facts that has been returned from session
         factsFromSession = filterFacts(ruleRuntimeListener, returnedFactsClass);
-      }
+      } else factsFromSession = ruleRuntimeListener.getNewObjectInsterted();
+
       // disposing the session
       kSession.dispose();
+
       logger.traceEntry("END - method - [fireStatefulRules(KieSession,RulesRequest,List<Class>)]");
 
       return new RulesResponse(numberOfFiredRules, factsFromSession);
@@ -196,6 +196,7 @@ class RulesEngineHelper {
     RuleAgendaListener ruleAgendaListner = new RuleAgendaListener();
 
     if (null != statelessKieSession && null != rulesRequest) {
+
       int numberOfFiredRules = 0;
       List<Object> factsFromSession = null;
 
@@ -205,12 +206,15 @@ class RulesEngineHelper {
       statelessKieSession.addEventListener(ruleRuntimeListener);
       statelessKieSession.addEventListener(ruleAgendaListner);
 
-      //Inserting the facts in the session
-      Command newInsertOrder = kieService.getCommands().newInsertElements(rulesRequest.getFacts());
+      List<Command> commandList = new ArrayList<>();
+
+      if (!CollectionUtils.isEmpty(rulesRequest.getFacts())) { //Inserting the facts in the session
+        Command newInsertOrder =
+            kieService.getCommands().newInsertElements(rulesRequest.getFacts());
+        commandList.add(newInsertOrder);
+      }
       Command newFireAllRules = kieService.getCommands().newFireAllRules("outFired");
 
-      List<Command> commandList = new ArrayList<>();
-      commandList.add(newInsertOrder);
       commandList.add(newFireAllRules);
 
       //Executing the command as a batch process
@@ -222,6 +226,8 @@ class RulesEngineHelper {
       //Filtering the facts that would be returned as a part of response
       if (!CollectionUtils.isEmpty(returnedFactsClass)) {
         factsFromSession = filterFacts(ruleRuntimeListener, returnedFactsClass);
+      } else {
+        factsFromSession = ruleRuntimeListener.getNewObjectInsterted();
       }
 
       logger.traceEntry(
@@ -242,8 +248,9 @@ class RulesEngineHelper {
    */
   private int fireRulesWithFact(KieSession kSession, List<Object> facts) {
 
-    //Adding all the facts to the session
-    facts.forEach(kSession::insert);
+    if (!CollectionUtils.isEmpty(facts)) { //Adding all the facts to the session
+      facts.forEach(kSession::insert);
+    }
     // firing the rules
     return kSession.fireAllRules();
   }

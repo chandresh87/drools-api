@@ -31,6 +31,7 @@ public class RulesConfig {
 
   @Autowired private ReleaseVersion releaseVersion;
 
+
   /**
    * Bean used for property place holder.It is used by spring to populate values from property file.
    */
@@ -92,7 +93,8 @@ public class RulesConfig {
             message.getText());
       }
 
-      throw new RulesApiException("Compilation errors were found. Check the logs.");
+      throw new RulesApiException(
+          "Compilation errors are found in the rules file. Please check the logs.");
     }
 
     KieScanner scanner = kieService.newKieScanner(kContainer);

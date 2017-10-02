@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 import org.drools.domain.Employee;
 import org.drools.domain.Promotion;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 import rules.api.engine.RulesEngine;
 import rules.api.enums.SessionType;
@@ -69,7 +70,7 @@ public class StressTesting extends BaseTest {
   @Test
   public void multithreadedEnvTest_withDiffObject2()
       throws InterruptedException, ExecutionException {
-	  salary = 0;
+    salary = 0;
     List<Class> factsReturned = new ArrayList<>();
     factsReturned.add(Employee.class);
 
@@ -99,39 +100,102 @@ public class StressTesting extends BaseTest {
       logger.info("Nino is: " + employee.getNino());
     }
   }
-    @Test
-    public void multithreadedEnvTest_withSameObject()
-        throws InterruptedException, ExecutionException {
-  	  
-       RulesRequest droolsParam = populateData();
-      List<Class> factsReturned = new ArrayList<>();
-      factsReturned.add(Employee.class);
 
-      for (int count = 0; count < 50; count++) {
+  @Test
+  public void multithreadedEnvTest_withSameObject()
+      throws InterruptedException, ExecutionException {
 
-        Future<RulesResponse> future =
-            executorService.submit(
-                new Callable() {
-                  public RulesResponse call() throws Exception {
+    RulesRequest droolsParam = populateData();
+    List<Class> factsReturned = new ArrayList<>();
+    factsReturned.add(Employee.class);
 
-                   
-                    RulesResponse droolsResponse = rulesEngine.fireRules(droolsParam, factsReturned);
+    for (int count = 0; count < 50; count++) {
 
-                    return droolsResponse;
-                  }
-                });
+      Future<RulesResponse> future =
+          executorService.submit(
+              new Callable() {
+                public RulesResponse call() throws Exception {
 
-        RulesResponse droolsResponse = future.get();
+                  RulesResponse droolsResponse = rulesEngine.fireRules(droolsParam, factsReturned);
 
-        logger.info("Response from rules engine");
-        logger.info("Number of Rules executed = " + droolsResponse.getNumberOfRulesFired());
-        Employee employee = (Employee) droolsResponse.getFactsFromSession().get(0);
-        logger.info("Employee ID: " + employee.getEmpID());
-        logger.info("Salary is: " + employee.getSalary());
-        logger.info("Increment: " + employee.getIncrement());
-        logger.info("Tax Rate is: " + employee.getTaxRate());
-        logger.info("Nino is: " + employee.getNino());
-      }
+                  return droolsResponse;
+                }
+              });
+
+      RulesResponse droolsResponse = future.get();
+
+      logger.info("Response from rules engine");
+      logger.info("Number of Rules executed = " + droolsResponse.getNumberOfRulesFired());
+      Employee employee = (Employee) droolsResponse.getFactsFromSession().get(0);
+      logger.info("Employee ID: " + employee.getEmpID());
+      logger.info("Salary is: " + employee.getSalary());
+      logger.info("Increment: " + employee.getIncrement());
+      logger.info("Tax Rate is: " + employee.getTaxRate());
+      logger.info("Nino is: " + employee.getNino());
+    }
+  }
+
+  @Test
+  public void testNullFacts() {
+    RulesRequest droolsParam = new RulesRequest();
+    RulesResponse droolsResponse = rulesEngine.fireRules(droolsParam, null);
+    Assert.assertEquals(droolsResponse.getNumberOfRulesFired(), 1);
+  }
+
+  @Test
+  public void testReturnAllFacts() {
+    RulesRequest droolsParam = populateData();
+
+    RulesResponse droolsResponse = rulesEngine.fireRules(droolsParam, null);
+    Assert.assertEquals(droolsResponse.getNumberOfRulesFired(), 2);
+    Assert.assertEquals(droolsResponse.getFactsFromSession().size(), 1);
+  }
+
+  @Test
+  public void testReturnSpecificFact_whichIsNotPresent() {
+    RulesRequest droolsParam = populateData();
+
+    List<Class> returnedFactsClass = new ArrayList<>();
+    returnedFactsClass.add(Promotion.class);
+
+    RulesResponse droolsResponse = rulesEngine.fireRules(droolsParam, returnedFactsClass);
+    Assert.assertEquals(droolsResponse.getNumberOfRulesFired(), 2);
+    Assert.assertEquals(droolsResponse.getFactsFromSession().size(), 0);
+  }
+
+  @Test
+  public void testReturnSpecificFact_whichIsPresent() {
+    RulesRequest droolsParam = populateData();
+    droolsParam.setSessionName("rules.employee.increment.statelesssession");
+    droolsParam.setSessionType(SessionType.STATELESS);
+
+    List<Class> returnedFactsClass = new ArrayList<>();
+    returnedFactsClass.add(Promotion.class);
+
+    RulesResponse droolsResponse = rulesEngine.fireRules(droolsParam, returnedFactsClass);
+    Assert.assertEquals(droolsResponse.getNumberOfRulesFired(), 3);
+    Assert.assertEquals(droolsResponse.getFactsFromSession().size(), 1);
+  }
+
+  @Test
+  public void testReturnAllPresentFact() {
+    RulesRequest droolsParam = populateData();
+    droolsParam.setSessionName("rules.employee.increment.statelesssession");
+    droolsParam.setSessionType(SessionType.STATELESS);
+
+    RulesResponse droolsResponse = rulesEngine.fireRules(droolsParam, null);
+    Assert.assertEquals(droolsResponse.getNumberOfRulesFired(), 3);
+    Assert.assertEquals(droolsResponse.getFactsFromSession().size(), 2);
+  }
+
+  @Test
+  public void testCommonRules() {
+    RulesRequest droolsParam = populateData();
+    droolsParam.setKieBasename("rules.common");
+    droolsParam.setSessionType(SessionType.STATELESS);
+    droolsParam.setBuildSessionByKieBase(true);
+    int droolsResponse = rulesEngine.fireRules(droolsParam);
+    Assert.assertEquals(droolsResponse, 1);
   }
 
   private RulesRequest populateData() {
@@ -147,14 +211,13 @@ public class StressTesting extends BaseTest {
     List<Object> facts = new ArrayList<>();
     facts.add(employee);
 
-    List<Class> factsReturned = new ArrayList<>();
-    factsReturned.add(Promotion.class);
-
     Map<String, Object> globalService = new HashMap();
     globalService.put("employeeService", EmployeeService);
 
     RulesRequest rulesRequest =
-        new RulesRequest.RulesRequestBuilder(facts, false)
+        new RulesRequest.RulesRequestBuilder()
+            .facts(facts)
+            .buildSessionByKieBase(false)
             .sessionName("rules.employee.tax.session")
             .sessionType(SessionType.STATEFUL)
             .globalService(globalService)

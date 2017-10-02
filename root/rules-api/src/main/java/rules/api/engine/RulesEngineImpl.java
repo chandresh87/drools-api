@@ -2,7 +2,6 @@
 package rules.api.engine;
 
 import java.util.List;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kie.api.runtime.KieSession;
@@ -63,9 +62,9 @@ public class RulesEngineImpl implements RulesEngine {
     KieSession kSession = null;
     RulesResponse rulesResponse = null;
 
-    logger.debug(rulesRequestParams);
+    logger.info(rulesRequestParams);
 
-    if (null == rulesRequestParams || CollectionUtils.isEmpty(rulesRequestParams.getFacts())) {
+    if (null == rulesRequestParams) {
 
       logger.error("Missing mandatory details in rulesRequest to run the rules");
 
@@ -104,7 +103,7 @@ public class RulesEngineImpl implements RulesEngine {
           rulesEngineHelper.fireRuleStateless(
               statelessKieSession, rulesRequestParams, returnedFactsClass);
     }
-    logger.debug(rulesResponse);
+    logger.info(rulesResponse);
     logger.traceExit("END - method - [fireRules(RulesRequest,List<Class>)]");
     return rulesResponse;
   }

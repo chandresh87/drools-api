@@ -45,13 +45,17 @@ public class App {
     globalService.put("employeeService", EmployeeService);
 
     RulesRequest droolsParam =
-        new RulesRequest.RulesRequestBuilder(facts, false)
+        new RulesRequest.RulesRequestBuilder()
+            .facts(facts)
+            .buildSessionByKieBase(false)
             .sessionName("rules.employee.increment.statelesssession")
             .sessionType(SessionType.STATELESS)
             .globalService(globalService)
             .build();
     RulesRequest droolsParam2 =
-        new RulesRequest.RulesRequestBuilder(facts, true)
+        new RulesRequest.RulesRequestBuilder()
+            .facts(facts)
+            .buildSessionByKieBase(true)
             .sessionName("rules.employee.tax.session")
             .sessionType(SessionType.STATEFUL)
             .globalService(globalService)

@@ -37,11 +37,13 @@ public class RulesEngineTest {
     assertEquals("class rules.api.engine.RulesEngineImpl", this.rulesEngine.getClass().toString());
   }
 
-  @Test(expectedExceptions = IllegalArgumentException.class)
+  @Test()
   public void testNullFact() {
     List<Object> facts = new ArrayList<>();
     RulesRequest rulesRequestParam =
-        new RulesRequest.RulesRequestBuilder(facts, false)
+        new RulesRequest.RulesRequestBuilder()
+            .facts(facts)
+            .buildSessionByKieBase(false)
             .sessionName("rules.employee.increment.statelesssession")
             .sessionType(SessionType.STATELESS)
             .build();
@@ -59,7 +61,11 @@ public class RulesEngineTest {
     List<Object> facts = new ArrayList<>();
     facts.add(new Object());
     RulesRequest rulesRequestParam =
-        new RulesRequest.RulesRequestBuilder(facts, false).sessionName("ABC").build();
+        new RulesRequest.RulesRequestBuilder()
+            .facts(facts)
+            .buildSessionByKieBase(false)
+            .sessionName("ABC")
+            .build();
     when(this.rulesEngineHelper.getStatefulKieSession(rulesRequestParam)).thenReturn(null);
     rulesEngine.fireRules(rulesRequestParam);
   }
@@ -69,7 +75,9 @@ public class RulesEngineTest {
     List<Object> facts = new ArrayList<>();
     facts.add(new Object());
     RulesRequest rulesRequestParam =
-        new RulesRequest.RulesRequestBuilder(facts, false)
+        new RulesRequest.RulesRequestBuilder()
+            .facts(facts)
+            .buildSessionByKieBase(false)
             .sessionName("ABC")
             .sessionType(SessionType.STATELESS)
             .build();

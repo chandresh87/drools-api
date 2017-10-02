@@ -1,0 +1,12 @@
+package commonRule
+
+dialect "java" ;
+
+rule "Common Rule"
+
+when
+
+then
+System.out.println("Common rule fired");
+
+end

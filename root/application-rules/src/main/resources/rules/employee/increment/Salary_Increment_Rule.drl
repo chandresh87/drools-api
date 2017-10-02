@@ -3,6 +3,8 @@ package performance.rules
 
 import org.drools.domain.Employee;
 import org.drools.domain.Promotion;
+import com.drools.domain.enums.SalaryIncrement
+import com.drools.domain.enums.Rating
 
 dialect "java" ;
 
@@ -16,38 +18,38 @@ end
 
 rule "A grade"
 when
-$i: Employee(rating==1)
+$i: Employee(rating==Rating.ONE.getRating())
 then
-$i.setIncrement(10);
+$i.setIncrement(SalaryIncrement.AGRADEINCREMENT.getIncrement());
 
 end
 
 rule "B grade"
 when
-$i: Employee(rating==2)
+$i: Employee(rating==Rating.TWO.getRating())
 then
-$i.setIncrement(7);
+$i.setIncrement(SalaryIncrement.BGRADEINCREMENT.getIncrement());
 
 end
 
 rule "C grade"
 when
-$i: Employee(rating==3)
+$i: Employee(rating==Rating.THREE.getRating())
 then
-$i.setIncrement(5);
+$i.setIncrement(SalaryIncrement.CGRADEINCREMENT.getIncrement());
 end
 
 
 rule "D grade"
 when
-$i: Employee(rating==4)
+$i: Employee(rating==Rating.FOUR.getRating())
 then
-$i.setIncrement(0);
+$i.setIncrement(SalaryIncrement.DGRADEINCREMENT.getIncrement());
 end
 
 rule "Entitle for promotion"
 when
-$i: Employee(rating==1)
+$i: Employee(rating==Rating.ONE.getRating())
 then
 insert(new Promotion($i.getEmpID(),$i.getEmpName()));
 end

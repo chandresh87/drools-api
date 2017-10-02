@@ -3,18 +3,22 @@
          xmlns="http://jboss.org/kie/6.0.0/kmodule">
 	
 <kbase name="rules.employee.increment" packages="rules.employee.increment"> 
-<ksession name="rules.employee.increment.session" type="stateful"/>
+<ksession name="rules.employee.increment.session" type="stateful" />
 <ksession name="rules.employee.increment.statelesssession" type="stateless"/>
 </kbase>
 
-<kbase name="rules.employee.tax"   packages="rules.employee.tax"> 
-<ksession name="rules.employee.tax.session" type="stateful"/>
-<ksession name="rules.employee.tax.statelesssession" type="stateless"/>
+<kbase name="rules.employee.tax"   packages="rules.employee.tax" > 
+<ksession name="rules.employee.tax.session" type="stateful"  />
+<ksession name="rules.employee.tax.statelesssession" type="stateless" />
 </kbase>
 
-<kbase name="KBase" default="true" packages="*">
+ <kbase name="KBase" default="true" packages="*">
      <ksession name="KSession" type="stateful" default="true"/>
  </kbase>
+ 
+ <kbase name="rules.common"  includes="common.base" packages="rules.common">
+     <ksession name="KSession.common" type="stateful" />
+ </kbase> 
   
 </kmodule>
 
