@@ -21,7 +21,7 @@ public class RuleRuntimeListener implements RuleRuntimeEventListener {
   //List of all the facts inserted
   private List<Object> newObjectInsterted = new ArrayList<>();
 
-  private Logger log = LogManager.getLogger(RuleRuntimeListener.class.getName());
+  private Logger log = LogManager.getLogger(this);
 
   /* (non-Javadoc)
    * @see org.kie.api.event.rule.RuleRuntimeEventListener#objectInserted(org.kie.api.event.rule.ObjectInsertedEvent)

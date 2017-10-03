@@ -84,6 +84,13 @@ public class StressTesting extends BaseTest {
                   RulesRequest droolsParam = populateData();
                   RulesResponse droolsResponse = rulesEngine.fireRules(droolsParam, factsReturned);
 
+                  Employee employee = (Employee) droolsParam.getFacts().get(0);
+                  logger.info("Employee ID: " + employee.getEmpID());
+                  logger.info("Salary is: " + employee.getSalary());
+                  logger.info("Increment: " + employee.getIncrement());
+                  logger.info("Tax Rate is: " + employee.getTaxRate());
+                  logger.info("Nino is: " + employee.getNino());
+
                   return droolsResponse;
                 }
               });
@@ -92,12 +99,6 @@ public class StressTesting extends BaseTest {
 
       logger.info("Response from rules engine");
       logger.info("Number of Rules executed = " + droolsResponse.getNumberOfRulesFired());
-      Employee employee = (Employee) droolsResponse.getFactsFromSession().get(0);
-      logger.info("Employee ID: " + employee.getEmpID());
-      logger.info("Salary is: " + employee.getSalary());
-      logger.info("Increment: " + employee.getIncrement());
-      logger.info("Tax Rate is: " + employee.getTaxRate());
-      logger.info("Nino is: " + employee.getNino());
     }
   }
 
@@ -107,7 +108,7 @@ public class StressTesting extends BaseTest {
 
     RulesRequest droolsParam = populateData();
     List<Class> factsReturned = new ArrayList<>();
-    factsReturned.add(Employee.class);
+    //factsReturned.add(Employee.class);
 
     for (int count = 0; count < 50; count++) {
 
@@ -116,7 +117,7 @@ public class StressTesting extends BaseTest {
               new Callable() {
                 public RulesResponse call() throws Exception {
 
-                  RulesResponse droolsResponse = rulesEngine.fireRules(droolsParam, factsReturned);
+                  RulesResponse droolsResponse = rulesEngine.fireRules(droolsParam, null);
 
                   return droolsResponse;
                 }
@@ -126,7 +127,7 @@ public class StressTesting extends BaseTest {
 
       logger.info("Response from rules engine");
       logger.info("Number of Rules executed = " + droolsResponse.getNumberOfRulesFired());
-      Employee employee = (Employee) droolsResponse.getFactsFromSession().get(0);
+      Employee employee = (Employee) droolsParam.getFacts().get(0);
       logger.info("Employee ID: " + employee.getEmpID());
       logger.info("Salary is: " + employee.getSalary());
       logger.info("Increment: " + employee.getIncrement());
@@ -145,10 +146,12 @@ public class StressTesting extends BaseTest {
   @Test
   public void testReturnAllFacts() {
     RulesRequest droolsParam = populateData();
-
+    droolsParam.setSessionName("rules.employee.increment.session");
+    droolsParam.setGlobalElement(null);
     RulesResponse droolsResponse = rulesEngine.fireRules(droolsParam, null);
-    Assert.assertEquals(droolsResponse.getNumberOfRulesFired(), 2);
+    Assert.assertEquals(droolsResponse.getNumberOfRulesFired(), 3);
     Assert.assertEquals(droolsResponse.getFactsFromSession().size(), 1);
+    Assert.assertEquals(droolsResponse.getFactsFromSession().get(0).getClass(), Promotion.class);
   }
 
   @Test
@@ -185,7 +188,7 @@ public class StressTesting extends BaseTest {
 
     RulesResponse droolsResponse = rulesEngine.fireRules(droolsParam, null);
     Assert.assertEquals(droolsResponse.getNumberOfRulesFired(), 3);
-    Assert.assertEquals(droolsResponse.getFactsFromSession().size(), 2);
+    Assert.assertEquals(droolsResponse.getFactsFromSession().size(), 1);
   }
 
   @Test

@@ -31,7 +31,6 @@ public class RulesConfig {
 
   @Autowired private ReleaseVersion releaseVersion;
 
-
   /**
    * Bean used for property place holder.It is used by spring to populate values from property file.
    */

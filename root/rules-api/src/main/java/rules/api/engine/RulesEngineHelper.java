@@ -17,9 +17,9 @@ import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.StatelessKieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import rules.api.channels.SendData;
 import rules.api.exception.RulesApiException;
 import rules.api.listener.RuleAgendaListener;
-import rules.api.listener.RuleRuntimeListener;
 import rules.api.message.RulesRequest;
 import rules.api.message.RulesResponse;
 
@@ -145,13 +145,15 @@ class RulesEngineHelper {
       int numberOfFiredRules = 0;
       List<Object> factsFromSession = null;
 
-      RuleRuntimeListener ruleRuntimeListener = new RuleRuntimeListener();
-
       RuleAgendaListener ruleAgendaListner = new RuleAgendaListener();
 
+      SendData sendDataChannel = new SendData();
+
       //Adding the listener to session
-      kSession.addEventListener(ruleRuntimeListener);
       kSession.addEventListener(ruleAgendaListner);
+
+      //Adding the channel to session
+      kSession.registerChannel("send-channel", sendDataChannel);
 
       // Setting global variables and Services
       setGlobalElement(kSession, droolsParam.getGlobalElement());
@@ -161,8 +163,8 @@ class RulesEngineHelper {
 
       if (!CollectionUtils.isEmpty(returnedFactsClass)) {
         // filter the facts that has been returned from session
-        factsFromSession = filterFacts(ruleRuntimeListener, returnedFactsClass);
-      } else factsFromSession = ruleRuntimeListener.getNewObjectInsterted();
+        factsFromSession = filterFacts(sendDataChannel, returnedFactsClass);
+      } else factsFromSession = sendDataChannel.getNewObjectInsterted();
 
       // disposing the session
       kSession.dispose();
@@ -191,9 +193,9 @@ class RulesEngineHelper {
 
     logger.traceEntry("START - method - [fireRuleStateless(KieSession,RulesRequest,List<Class>)]");
 
-    RuleRuntimeListener ruleRuntimeListener = new RuleRuntimeListener();
-
     RuleAgendaListener ruleAgendaListner = new RuleAgendaListener();
+
+    SendData sendDataChannel = new SendData();
 
     if (null != statelessKieSession && null != rulesRequest) {
 
@@ -202,9 +204,12 @@ class RulesEngineHelper {
 
       // Setting global variables and Services
       setGlobalElement(statelessKieSession, rulesRequest.getGlobalElement());
+
       // Adding the listener for the session
-      statelessKieSession.addEventListener(ruleRuntimeListener);
       statelessKieSession.addEventListener(ruleAgendaListner);
+
+      //Register Channel
+      statelessKieSession.registerChannel("send-channel", sendDataChannel);
 
       List<Command> commandList = new ArrayList<>();
 
@@ -225,9 +230,9 @@ class RulesEngineHelper {
 
       //Filtering the facts that would be returned as a part of response
       if (!CollectionUtils.isEmpty(returnedFactsClass)) {
-        factsFromSession = filterFacts(ruleRuntimeListener, returnedFactsClass);
+        factsFromSession = filterFacts(sendDataChannel, returnedFactsClass);
       } else {
-        factsFromSession = ruleRuntimeListener.getNewObjectInsterted();
+        factsFromSession = sendDataChannel.getNewObjectInsterted();
       }
 
       logger.traceEntry(
@@ -261,9 +266,9 @@ class RulesEngineHelper {
    * @param returned Facts Class
    * @return list of objects
    */
-  private List<Object> filterFacts(
-      RuleRuntimeListener ruleRuntimeListener, List<Class> returnedFactsClass) {
-    return ruleRuntimeListener
+  private List<Object> filterFacts(SendData sendDataChannel, List<Class> returnedFactsClass) {
+
+    return sendDataChannel
         .getNewObjectInsterted()
         .stream()
         .filter(element -> returnedFactsClass.contains(element.getClass()))
