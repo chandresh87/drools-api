@@ -51,7 +51,8 @@ rule "Entitle for promotion"
 when
 $i: Employee(rating==Rating.ONE.getRating())
 then
-//insert(new Promotion($i.getEmpID(),$i.getEmpName()));
+  Promotion $promotion=new Promotion($i.getEmpID(),$i.getEmpName());
+  insert($promotion);
   channels["send-channel"].send(new Promotion($i.getEmpID(),$i.getEmpName()));
 
 end
