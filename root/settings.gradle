@@ -1,10 +1,10 @@
 rootProject.name = 'root'
-include ':rules-api'
+//include ':rules-api'
 include ':application-rule'
 include ':application'
 include ':rules-domain'
 
-project(':rules-api').projectDir = "$rootDir/rules-api" as File
+//project(':rules-api').projectDir = "$rootDir/rules-api" as File
 project(':application-rule').projectDir = "$rootDir/application-rules" as File
 project(':application').projectDir = "$rootDir/application" as File
 project(':rules-domain').projectDir = "$rootDir/rules-domain" as File

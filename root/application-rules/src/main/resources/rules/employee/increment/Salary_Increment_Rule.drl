@@ -53,6 +53,6 @@ $i: Employee(rating==Rating.ONE.getRating())
 then
   Promotion $promotion=new Promotion($i.getEmpID(),$i.getEmpName());
   insert($promotion);
-  channels["send-channel"].send(new Promotion($i.getEmpID(),$i.getEmpName()));
+  channels["send-channel"].send($promotion);
 
 end

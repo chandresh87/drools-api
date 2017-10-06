@@ -7,6 +7,6 @@ rule "Common Rule"
 when
 
 then
-System.out.println("Common rule fired");
+System.out.println("Common rule fired.Lets check the output");
 
 end

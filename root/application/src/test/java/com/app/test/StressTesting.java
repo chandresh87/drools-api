@@ -201,6 +201,18 @@ public class StressTesting extends BaseTest {
     Assert.assertEquals(droolsResponse, 1);
   }
 
+  @Test
+  public void testCommonRuleReload() {
+    //while (true) {
+    RulesRequest droolsParam = populateData();
+    droolsParam.setKieBasename("rules.common");
+    droolsParam.setSessionType(SessionType.STATELESS);
+    droolsParam.setBuildSessionByKieBase(true);
+    int droolsResponse = rulesEngine.fireRules(droolsParam);
+    Assert.assertEquals(droolsResponse, 1);
+    // }
+  }
+
   private RulesRequest populateData() {
 
     Employee employee = new Employee();
