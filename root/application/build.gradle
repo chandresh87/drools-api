@@ -1,15 +1,35 @@
-group = 'com.application'
-description = ''
+
+buildscript {
+	
+	dependencies {
+		repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+	}
+}
+
+group = 'com.rules.application'
+version = '0.0.1-SNAPSHOT'
+
+apply plugin: 'org.springframework.boot'
+apply plugin: 'war'
+
+war {
+	archiveName = 'rulesApp.war'
+}
+
 dependencies {
  
-  compile project(':rules-domain')
+    compile project(':rules-domain')
   
    	compile group: 'com.rules-api', name: 'rule-api', version:'1.0.0'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version:'2.6.1'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version:'2.6.1'
-    
-   	testCompile group: 'org.testng', name: 'testng', version:'6.10'
-    testCompile group: 'org.mockito', name: 'mockito-core', version:'2.7.22'
-    testCompile group: 'org.springframework', name: 'spring-test', version:'5.0.0.RELEASE'
+    compile('org.springframework.boot:spring-boot-starter-web')
+	testCompile('org.springframework.boot:spring-boot-starter-test')
    
+}
+configurations {
+	//compile.exclude module: 'spring-boot-starter-logging'
 }
