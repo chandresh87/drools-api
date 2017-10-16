@@ -3,6 +3,7 @@ package com.app.test;
 
 import com.drools.service.EmployeeService;
 import com.drools.service.EmployeeServiceImpl;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +39,7 @@ public class StressTesting extends BaseTest {
   public void multithreadedEnvTest_withDiffObject()
       throws InterruptedException, ExecutionException {
 
-    List<Class> factsReturned = new ArrayList<>();
+    List<Class<?>> factsReturned = new ArrayList<>();
     factsReturned.add(Promotion.class);
 
     for (int count = 0; count < 50; count++) {
@@ -71,7 +72,7 @@ public class StressTesting extends BaseTest {
   public void multithreadedEnvTest_withDiffObject2()
       throws InterruptedException, ExecutionException {
     salary = 0;
-    List<Class> factsReturned = new ArrayList<>();
+    List<Class<?>> factsReturned = new ArrayList<>();
     factsReturned.add(Employee.class);
 
     for (int count = 0; count < 50; count++) {
@@ -137,7 +138,9 @@ public class StressTesting extends BaseTest {
   }
 
   @Test
-  public void testNullFacts() {
+  public void testNullFacts()
+      throws NoSuchMethodException, SecurityException, IllegalAccessException,
+          IllegalArgumentException, InvocationTargetException, InstantiationException {
     RulesRequest droolsParam = new RulesRequest();
     RulesResponse droolsResponse = rulesEngine.fireRules(droolsParam, null);
     Assert.assertEquals(droolsResponse.getNumberOfRulesFired(), 1);
@@ -158,7 +161,7 @@ public class StressTesting extends BaseTest {
   public void testReturnSpecificFact_whichIsNotPresent() {
     RulesRequest droolsParam = populateData();
 
-    List<Class> returnedFactsClass = new ArrayList<>();
+    List<Class<?>> returnedFactsClass = new ArrayList<>();
     returnedFactsClass.add(Promotion.class);
 
     RulesResponse droolsResponse = rulesEngine.fireRules(droolsParam, returnedFactsClass);
@@ -172,7 +175,7 @@ public class StressTesting extends BaseTest {
     droolsParam.setSessionName("rules.employee.increment.statelesssession");
     droolsParam.setSessionType(SessionType.STATELESS);
 
-    List<Class> returnedFactsClass = new ArrayList<>();
+    List<Class<?>> returnedFactsClass = new ArrayList<>();
     returnedFactsClass.add(Promotion.class);
 
     RulesResponse droolsResponse = rulesEngine.fireRules(droolsParam, returnedFactsClass);
@@ -191,24 +194,24 @@ public class StressTesting extends BaseTest {
     Assert.assertEquals(droolsResponse.getFactsFromSession().size(), 1);
   }
 
-  @Test
+  @Test(enabled = false)
   public void testCommonRules() {
     RulesRequest droolsParam = populateData();
     droolsParam.setKieBasename("rules.common");
     droolsParam.setSessionType(SessionType.STATELESS);
     droolsParam.setBuildSessionByKieBase(true);
-    int droolsResponse = rulesEngine.fireRules(droolsParam);
+    int droolsResponse = rulesEngine.fireRules(droolsParam).getNumberOfRulesFired();
     Assert.assertEquals(droolsResponse, 1);
   }
 
-  @Test
+  @Test(enabled = false)
   public void testCommonRuleReload() {
     //while (true) {
     RulesRequest droolsParam = populateData();
     droolsParam.setKieBasename("rules.common");
     droolsParam.setSessionType(SessionType.STATELESS);
     droolsParam.setBuildSessionByKieBase(true);
-    int droolsResponse = rulesEngine.fireRules(droolsParam);
+    int droolsResponse = rulesEngine.fireRules(droolsParam).getNumberOfRulesFired();
     Assert.assertEquals(droolsResponse, 1);
     // }
   }

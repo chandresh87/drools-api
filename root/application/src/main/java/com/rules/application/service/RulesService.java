@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import rules.api.engine.RulesEngine;
 import rules.api.enums.SessionType;
 import rules.api.message.RulesRequest;
+import rules.api.message.RulesResponse;
 
 /** @author chandresh.mishra */
 @Service
@@ -22,7 +23,8 @@ public class RulesService {
 
   public int fireAppRules() {
     RulesRequest rulesRequest = populateData();
-    return rulesEngine.fireRules(rulesRequest);
+    RulesResponse rulesResponse = rulesEngine.fireRules(rulesRequest);
+    return rulesResponse.getNumberOfRulesFired();
   }
 
   private RulesRequest populateData() {

@@ -16,14 +16,20 @@ public class RulesResponse {
   // List of objects from session
   private List<Object> factsFromSession;
 
+  // List of rules fired
+  private List<String> rulesFired;
+
   /**
-   * @param factsFromSession
    * @param numberOfRulesFired
+   * @param factsFromSession
+   * @param rulesFired
    */
-  public RulesResponse(int numberOfRulesFired, List<Object> factsFromSession) {
-    super();
-    this.factsFromSession = factsFromSession;
+  public RulesResponse(
+      int numberOfRulesFired, List<Object> factsFromSession, List<String> rulesFired) {
+
     this.numberOfRulesFired = numberOfRulesFired;
+    this.factsFromSession = factsFromSession;
+    this.rulesFired = rulesFired;
   }
 
   /** @return the factsFromSession */
@@ -36,14 +42,25 @@ public class RulesResponse {
     return numberOfRulesFired;
   }
 
+  /** @return the rulesFired */
+  public List<String> getRulesFired() {
+    return rulesFired;
+  }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#toString()
+   */
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    builder.append("RulesResponse [numberOfRulesFired=");
-    builder.append(numberOfRulesFired);
-    builder.append(", factsFromSession=");
-    builder.append(factsFromSession);
-    builder.append("]");
+    builder
+        .append("RulesResponse [numberOfRulesFired=")
+        .append(numberOfRulesFired)
+        .append(", factsFromSession=")
+        .append(factsFromSession)
+        .append(", rulesFired=")
+        .append(rulesFired)
+        .append("]");
     return builder.toString();
   }
 }

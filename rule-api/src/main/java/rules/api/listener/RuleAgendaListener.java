@@ -1,6 +1,8 @@
 /** */
 package rules.api.listener;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kie.api.event.rule.AfterMatchFiredEvent;
@@ -14,7 +16,7 @@ import org.kie.api.event.rule.RuleFlowGroupActivatedEvent;
 import org.kie.api.event.rule.RuleFlowGroupDeactivatedEvent;
 
 /**
- * This class act as a rule agenda listener.It would be used for the auditing to print all the rules
+ * This class act as a rule agenda listener.It would be used for the auditing to log all the rules
  * matched and fired. It implements AgendaEventListener
  *
  * @author chandresh.mishra
@@ -23,12 +25,16 @@ public class RuleAgendaListener implements AgendaEventListener {
 
   private Logger log = LogManager.getLogger(this);
 
+  private List<String> rulesFired = new ArrayList<>();
+
   /* (non-Javadoc)
    * @see org.kie.api.event.rule.AgendaEventListener#afterMatchFired(org.kie.api.event.rule.AfterMatchFiredEvent)
    */
   @Override
   public void afterMatchFired(AfterMatchFiredEvent event) {
+
     log.info("Rules fired : " + event.getMatch().getRule().getName());
+    rulesFired.add(event.getMatch().getRule().getName());
   }
 
   @Override
@@ -81,5 +87,10 @@ public class RuleAgendaListener implements AgendaEventListener {
   public void afterRuleFlowGroupDeactivated(RuleFlowGroupDeactivatedEvent event) {
 
     // No Implementation
+  }
+
+  /** @return the rulesFired List */
+  public List<String> getRulesFired() {
+    return rulesFired;
   }
 }

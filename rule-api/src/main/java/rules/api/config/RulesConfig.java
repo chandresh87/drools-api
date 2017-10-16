@@ -2,16 +2,12 @@
 package rules.api.config;
 
 import java.util.List;
-import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kie.api.KieServices;
-import org.kie.api.builder.KieScanner;
 import org.kie.api.builder.Message;
-import org.kie.api.builder.ReleaseId;
 import org.kie.api.builder.Results;
 import org.kie.api.runtime.KieContainer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -28,8 +24,6 @@ import rules.api.exception.RulesApiException;
 public class RulesConfig {
 
   private Logger logger = LogManager.getLogger(this);
-
-  @Autowired private ReleaseVersion releaseVersion;
 
   /**
    * Bean used for property place holder.It is used by spring to populate values from property file.
@@ -48,30 +42,12 @@ public class RulesConfig {
 
     logger.traceEntry("START - method - [getKieContainer()]");
 
-    if (StringUtils.isEmpty(releaseVersion.getGroupID())
-        || StringUtils.isEmpty(releaseVersion.getArtifactID())
-        || StringUtils.isEmpty(releaseVersion.getVersion())) {
-
-      logger.error("Not able to build the container.Missing mandatory details");
-
-      throw new RulesApiException("Not able to build the container.Missing mandatory details");
-    }
-
     logger.info("Building Container");
-    logger.info("Group ID " + releaseVersion.getGroupID());
-    logger.info("Artifact ID " + releaseVersion.getArtifactID());
-    logger.info("version " + releaseVersion.getVersion());
 
     KieServices kieService = KieServices.Factory.get();
 
-    ReleaseId releaseId =
-        kieService.newReleaseId(
-            releaseVersion.getGroupID(),
-            releaseVersion.getArtifactID(),
-            releaseVersion.getVersion());
-
     //Building container using kiejar from repository
-    KieContainer kContainer = kieService.newKieContainer(releaseId);
+    KieContainer kContainer = kieService.newKieClasspathContainer();
 
     //Verifying all the rules loaded in container
     Results results = kContainer.verify();
@@ -96,11 +72,24 @@ public class RulesConfig {
           "Compilation errors are found in the rules file. Please check the logs.");
     }
 
-    KieScanner scanner = kieService.newKieScanner(kContainer);
-
-    //Scan for new Kiejar in repository at certain interval
-    scanner.start(releaseVersion.getScanInterval());
-
+    kContainer
+        .getKieBaseNames()
+        .stream()
+        .map(
+            (kieBase) -> {
+              logger.info(">> Loading KieBase: " + kieBase);
+              return kieBase;
+            })
+        .forEach(
+            (kieBase) -> {
+              kContainer
+                  .getKieSessionNamesInKieBase(kieBase)
+                  .stream()
+                  .forEach(
+                      (kieSession) -> {
+                        logger.info("\t >> Containing KieSession: " + kieSession);
+                      });
+            });
     logger.traceExit("END - method - [getKieContainer()]");
     return kContainer;
   }

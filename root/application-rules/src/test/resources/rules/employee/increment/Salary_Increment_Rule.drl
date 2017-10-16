@@ -1,0 +1,58 @@
+package performance.rules
+
+
+import org.drools.domain.Employee;
+import org.drools.domain.Promotion;
+import com.drools.domain.enums.SalaryIncrement
+import com.drools.domain.enums.Rating
+
+dialect "java" ;
+
+rule "default"
+when
+
+then
+System.out.println("Hello Drools");
+
+end
+
+rule "A grade"
+when
+$i: Employee(rating==Rating.ONE.getRating())
+then
+$i.setIncrement(SalaryIncrement.AGRADEINCREMENT.getIncrement());
+
+end
+
+rule "B grade"
+when
+$i: Employee(rating==Rating.TWO.getRating())
+then
+$i.setIncrement(SalaryIncrement.BGRADEINCREMENT.getIncrement());
+
+end
+
+rule "C grade"
+when
+$i: Employee(rating==Rating.THREE.getRating())
+then
+$i.setIncrement(SalaryIncrement.CGRADEINCREMENT.getIncrement());
+end
+
+
+rule "D grade"
+when
+$i: Employee(rating==Rating.FOUR.getRating())
+then
+$i.setIncrement(SalaryIncrement.DGRADEINCREMENT.getIncrement());
+end
+
+rule "Entitle for promotion"
+when
+$i: Employee(rating==Rating.ONE.getRating())
+then
+  Promotion $promotion=new Promotion($i.getEmpID(),$i.getEmpName());
+  insert($promotion);
+  channels["send-channel"].send($promotion);
+
+end

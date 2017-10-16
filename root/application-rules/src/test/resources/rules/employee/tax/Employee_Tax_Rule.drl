@@ -1,0 +1,48 @@
+package tax.rules
+
+
+import org.drools.domain.Employee;
+import com.drools.service.EmployeeService
+import com.drools.domain.enums.Tax
+
+dialect "java" ;
+
+global  EmployeeService employeeService;
+
+rule "Starting rate limit "
+when
+$i: Employee(salary<=5000)
+then
+$i.setTax(Tax.STARTING_TAX.getTax());
+
+end
+
+rule "Basic rate band "
+when
+$i: Employee(salary>5000 ,salary<=32000)
+then
+$i.setTax(Tax.BASIC_TAX.getTax());
+
+end
+
+rule "Higher rate band "
+when
+$i: Employee(salary>32000, salary<=150000)
+then
+$i.setTax(Tax.HIGHER_TAX.getTax());
+end
+
+
+rule "Additional rate band"
+when
+$i: Employee( salary>150000)
+then
+$i.setTax(Tax.ADDITIONAL_TAX.getTax());
+end
+
+rule "Populate Nino"
+when
+$i: Employee()
+then
+$i.setNino(employeeService.getNino($i.getEmpID())+"G");
+end

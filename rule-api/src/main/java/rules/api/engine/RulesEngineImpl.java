@@ -30,20 +30,14 @@ public class RulesEngineImpl implements RulesEngine {
    *
    * @param rulesRequestParams - All the parameter required to fire the rule
    * @param returnedFactsClass - List of class for facts returned from session.
-   * @return integer - Number of rules fired
+   * @return RulesResponse - Number of rules fired and name of rules fired
    */
   @Override
-  public int fireRules(RulesRequest rulesRequestParams) {
+  public RulesResponse fireRules(RulesRequest rulesRequestParams) {
 
     logger.traceEntry("START - method - [fireRules(RulesRequest)]");
-    RulesResponse rulesResponse = this.fireRules(rulesRequestParams, null);
-    int rulesFiredCount = 0;
-    if (null != rulesResponse) {
-      rulesFiredCount = rulesResponse.getNumberOfRulesFired();
-    }
-    logger.debug("Number of rules fired {}", rulesFiredCount);
     logger.traceExit("END - method - [fireRules(RulesRequest)]");
-    return rulesFiredCount;
+    return this.fireRules(rulesRequestParams, null);
   }
 
   /**
@@ -55,7 +49,8 @@ public class RulesEngineImpl implements RulesEngine {
    * @return RulesResponse
    */
   @Override
-  public RulesResponse fireRules(RulesRequest rulesRequestParams, List<Class> returnedFactsClass) {
+  public RulesResponse fireRules(
+      RulesRequest rulesRequestParams, List<Class<?>> returnedFactsClass) {
 
     logger.traceEntry("START - method - [fireRules(RulesRequest,List<Class>)]");
 

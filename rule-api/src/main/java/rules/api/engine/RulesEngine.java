@@ -5,7 +5,7 @@ import rules.api.message.RulesRequest;
 import rules.api.message.RulesResponse;
 
 /**
- * This interface has method to fire rules by passing the RulesRequest and get the response.
+ * This interface has method to fire rules by passing the RulesRequest and get the RulesResponse.
  *
  * @author chandresh.mishra
  */
@@ -18,7 +18,7 @@ public interface RulesEngine {
    * @param returnedFactsClass - List of class for facts returned from session.
    * @return integer - Number of rules fired
    */
-  public int fireRules(RulesRequest rulesRequestParams);
+  public RulesResponse fireRules(RulesRequest rulesRequestParams);
 
   /**
    * This method is used to fire the rules and return the response containing number of rules fired
@@ -28,5 +28,6 @@ public interface RulesEngine {
    * @param returnedFactsClass - List of class for facts returned from session.
    * @return RulesResponse
    */
-  RulesResponse fireRules(RulesRequest rulesRequestParams, List<Class> returnedFactsClass);
+  public RulesResponse fireRules(
+      RulesRequest rulesRequestParams, List<Class<?>> returnedFactsClass);
 }

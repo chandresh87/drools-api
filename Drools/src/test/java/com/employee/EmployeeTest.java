@@ -29,13 +29,13 @@ public class EmployeeTest extends RulesBaseTest {
 
   @Test
   public void fireDefaultSession() {
-    // kSession = createDefaultSession();
+    kSession = createDefaultSession();
 
     Employee employee = new Employee();
     employee.setEmpName("John");
     employee.setRating(1);
     List<Object> list = new ArrayList<>();
     list.add(employee);
-    // int firedrule = fireRule(kSession, list, null);
+    int firedrule = fireRule(kSession, list, null);
   }
 }

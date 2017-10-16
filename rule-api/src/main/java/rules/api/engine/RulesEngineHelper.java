@@ -136,7 +136,7 @@ class RulesEngineHelper {
    * @return
    */
   public RulesResponse fireStatefulRules(
-      KieSession kSession, RulesRequest droolsParam, List<Class> returnedFactsClass) {
+      KieSession kSession, RulesRequest droolsParam, List<Class<?>> returnedFactsClass) {
 
     logger.traceEntry("START - method - [fireStatefulRules(KieSession,RulesRequest,List<Class>)]");
 
@@ -144,6 +144,7 @@ class RulesEngineHelper {
 
       int numberOfFiredRules = 0;
       List<Object> factsFromSession = null;
+      List<String> rulesFired = null;
 
       RuleAgendaListener ruleAgendaListner = new RuleAgendaListener();
 
@@ -166,12 +167,13 @@ class RulesEngineHelper {
         factsFromSession = filterFacts(sendDataChannel, returnedFactsClass);
       } else factsFromSession = sendDataChannel.getNewObjectInsterted();
 
+      rulesFired = ruleAgendaListner.getRulesFired();
       // disposing the session
       kSession.dispose();
 
       logger.traceEntry("END - method - [fireStatefulRules(KieSession,RulesRequest,List<Class>)]");
 
-      return new RulesResponse(numberOfFiredRules, factsFromSession);
+      return new RulesResponse(numberOfFiredRules, factsFromSession, rulesFired);
     } else {
       logger.error("KieSession and RulesRequest are mandatory feilds");
       throw new RulesApiException("KieSession and RulesRequest are mandatory feilds");
@@ -189,7 +191,7 @@ class RulesEngineHelper {
   public RulesResponse fireRuleStateless(
       StatelessKieSession statelessKieSession,
       RulesRequest rulesRequest,
-      List<Class> returnedFactsClass) {
+      List<Class<?>> returnedFactsClass) {
 
     logger.traceEntry("START - method - [fireRuleStateless(KieSession,RulesRequest,List<Class>)]");
 
@@ -201,6 +203,7 @@ class RulesEngineHelper {
 
       int numberOfFiredRules = 0;
       List<Object> factsFromSession = null;
+      List<String> rulesFired = null;
 
       // Setting global variables and Services
       setGlobalElement(statelessKieSession, rulesRequest.getGlobalElement());
@@ -234,10 +237,10 @@ class RulesEngineHelper {
       } else {
         factsFromSession = sendDataChannel.getNewObjectInsterted();
       }
-
+      rulesFired = ruleAgendaListner.getRulesFired();
       logger.traceEntry(
           "START - method - [fireRuleStateless(KieSession,RulesRequest,List<Class>)]");
-      return new RulesResponse(numberOfFiredRules, factsFromSession);
+      return new RulesResponse(numberOfFiredRules, factsFromSession, rulesFired);
     } else {
       logger.error("statelessKieSession and RulesRequest are mandatory feilds");
       throw new RulesApiException("statelessKieSession and RulesRequest are mandatory feilds");
@@ -266,7 +269,7 @@ class RulesEngineHelper {
    * @param returned Facts Class
    * @return list of objects
    */
-  private List<Object> filterFacts(SendData sendDataChannel, List<Class> returnedFactsClass) {
+  private List<Object> filterFacts(SendData sendDataChannel, List<Class<?>> returnedFactsClass) {
 
     return sendDataChannel
         .getNewObjectInsterted()
