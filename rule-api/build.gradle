@@ -4,8 +4,10 @@ plugins {
 	
 }
 
-group = 'com.rules-api'
+group = 'com.rules'
 version = '1.0.0'
+
+
 
 apply plugin:'java'
 apply plugin: 'maven'
@@ -13,11 +15,35 @@ apply plugin: 'maven'
 
  sourceCompatibility = 1.8
  targetCompatibility = 1.8
- 
- jar {
-     from sourceSets.main.allSource
- }
- 
+
+
+
+jar.enabled = false
+
+artifacts {
+  archives file: file("build/libs/rule-api-${version}.jar"), name: "rule-api", type: "jar"
+  archives file: file("build/libs/rule-test-${version}.jar"), name: "rule-test", type: "jar"
+}
+
+task apiJar(type: Jar, description: "Creates the Rule Api JAR ." ) {  
+
+    from(sourceSets.main.output) {  
+        include "rules/api/**" 
+      
+         archiveName = "rule-api-${version}.jar"
+    }  
+}
+
+task testJar(type: Jar , description: "Creates the Rule Test JAR .") {  
+
+    from(sourceSets.main.output) {  
+        include "rules/test/**" 
+     
+         archiveName = "rule-test-${version}.jar"
+ }  
+}
+
+
   repositories {
    // mavenLocal()
    // mavenCentral()
@@ -27,6 +53,23 @@ apply plugin: 'maven'
    // maven { url "http://repository.jboss.org/nexus/content/groups/public/" }
   }
    
+
+
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+           repository(url: "file://C:/Users/chandresh.mishra/.m2/repository")
+           
+            addFilter("api") { artifact, file -> artifact.name == "rule-api" }
+		     addFilter("test") { artifact, file -> artifact.name == "rule-test" }
+		     
+            pom('api').version = "${version}"
+             pom('test').version = "${version}"
+        }
+    }
+}
+  
 dependencies {
     compile group: 'org.springframework', name: 'spring-core', version:'5.0.0.RELEASE'
     compile group: 'org.springframework', name: 'spring-context', version:'5.0.0.RELEASE'
@@ -39,8 +82,6 @@ dependencies {
   	compile group: 'org.mvel', name: 'mvel2', version:'2.3.2.Final'
     compile group: 'org.kie', name: 'kie-ci', version:'7.3.0.Final'
     
-    //compile group: 'org.slf4j', name: 'slf4j-api', version:'1.7.5'
-    //compile group: 'org.slf4j', name: 'slf4j-log4j12', version:'1.7.5'
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version:'2.8.2'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version:'2.8.2'
     

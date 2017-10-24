@@ -10,7 +10,7 @@ apply plugin:'java'
 repositories {
     
     mavenCentral()
-   // maven { url 'http://10.133.49.250:8081/repository/nps-itmp/' }
+    maven { url 'http://10.133.49.250:8081/repository/nps-itmp/' }
   }
   
   subprojects {
@@ -29,7 +29,7 @@ ext {
   
   repositories {
   
-   // maven { url 'http://10.133.49.250:8081/repository/nps-itmp/' }
+    maven { url 'http://10.133.49.250:8081/repository/nps-itmp/' }
     mavenLocal()
       mavenCentral()
     

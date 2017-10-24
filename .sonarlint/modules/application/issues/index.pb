@@ -7,8 +7,6 @@ Y
 -src/test/java/com/app/test/StressTesting.java,a\2\a26cc5ad2e54eb8e6facba8c423bc4d90e2cbc7e
 X
 (src/test/java/com/app/test/BaseTest.java,9\5\95451e08b952e44849d59737aa85d732329c2376
-\
-,src/test/java/com/app/test/CustomAssert.java,b\8\b82ab787e74b80e1c27e8581037ade0e9ce3bf31
 p
 @src/main/java/com/rule/application/config/ApplicationConfig.java,b\e\be55c23cd43690669fe4cdfefde7548629ae6a07
 p

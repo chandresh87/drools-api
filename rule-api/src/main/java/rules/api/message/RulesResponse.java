@@ -17,7 +17,7 @@ public class RulesResponse {
   private List<Object> factsFromSession;
 
   // List of rules fired
-  private List<String> rulesFired;
+  private List<String> nameOfRulesFired;
 
   /**
    * @param numberOfRulesFired
@@ -29,7 +29,7 @@ public class RulesResponse {
 
     this.numberOfRulesFired = numberOfRulesFired;
     this.factsFromSession = factsFromSession;
-    this.rulesFired = rulesFired;
+    this.nameOfRulesFired = rulesFired;
   }
 
   /** @return the factsFromSession */
@@ -42,9 +42,9 @@ public class RulesResponse {
     return numberOfRulesFired;
   }
 
-  /** @return the rulesFired */
-  public List<String> getRulesFired() {
-    return rulesFired;
+  /** @return the nameOfRulesFired */
+  public List<String> getNameOfRulesFired() {
+    return nameOfRulesFired;
   }
 
   /* (non-Javadoc)
@@ -59,7 +59,7 @@ public class RulesResponse {
         .append(", factsFromSession=")
         .append(factsFromSession)
         .append(", rulesFired=")
-        .append(rulesFired)
+        .append(nameOfRulesFired)
         .append("]");
     return builder.toString();
   }

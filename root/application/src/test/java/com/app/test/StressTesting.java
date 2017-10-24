@@ -216,6 +216,16 @@ public class StressTesting extends BaseTest {
     // }
   }
 
+  @Test
+  public void testReturnedRuleNames() {
+
+    RulesRequest rulesRequest = populateData();
+    RulesResponse rulesResponse = rulesEngine.fireRules(rulesRequest);
+    rulesResponse.getNameOfRulesFired();
+    Assert.assertEquals(rulesResponse.getNumberOfRulesFired(), 2);
+    Assert.assertTrue(rulesResponse.getNameOfRulesFired().contains("Starting rate limit "));
+  }
+
   private RulesRequest populateData() {
 
     Employee employee = new Employee();
