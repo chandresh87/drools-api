@@ -17,11 +17,11 @@ public class RulesRequest {
   private String kieBasename;
   // Type of session .Stateful or Stateless
   private SessionType sessionType;
-  // Facts passes to session.It is mandatory field.
+  // List of facts passes to session.
   private List<Object> facts;
   // Map of global elements if present in rule.
   private Map<String, Object> globalElement;
-  // Build session by using kiebase name or kieSession name.It is mandatory field.
+  // Build session by using kiebase name or kieSession name.
   private boolean buildSessionByKieBase;
 
   public RulesRequest() { // default constructor
@@ -30,12 +30,12 @@ public class RulesRequest {
   /**
    * Parameterised constructor for RulesRequest
    *
-   * @param sessionName
-   * @param kieBasename
-   * @param sessionType
-   * @param facts
-   * @param globalElement
-   * @param buildSessionByKieBase
+   * @param sessionName - Name of the session
+   * @param kieBasename - Name of the kieBase Name
+   * @param sessionType - Type of session- stateless or stateful
+   * @param facts - facts object passed to the engine
+   * @param globalElement - global elements in the rules
+   * @param buildSessionByKieBase - build session by session name OR kiebase name indicator
    */
   public RulesRequest(
       String sessionName,

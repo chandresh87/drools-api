@@ -1,4 +1,4 @@
-/** */
+
 package rules.api.engine;
 
 import java.util.ArrayList;
@@ -188,6 +188,7 @@ class RulesEngineHelper {
    * @param facts
    * @return RulesResponse
    */
+  @SuppressWarnings("rawtypes")
   public RulesResponse fireRuleStateless(
       StatelessKieSession statelessKieSession,
       RulesRequest rulesRequest,

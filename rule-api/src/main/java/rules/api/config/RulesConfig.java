@@ -27,6 +27,8 @@ public class RulesConfig {
 
   /**
    * Bean used for property place holder.It is used by spring to populate values from property file.
+   *
+   * @return PropertySourcesPlaceholderConfigurer
    */
   @Bean
   public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
@@ -36,6 +38,8 @@ public class RulesConfig {
   /**
    * This method initialise the container with given group ,artifact and version. It will verify all
    * the rules loaded from the kieJar and throw an exception in case of syntax error
+   *
+   * @return KieContainer
    */
   @Bean
   public KieContainer getKieContainer() {

@@ -1,7 +1,7 @@
-/** */
 package rules.api.engine;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kie.api.runtime.KieSession;
@@ -26,18 +26,17 @@ public class RulesEngineImpl implements RulesEngine {
   private Logger logger = LogManager.getLogger(this);
 
   /**
-   * This method is used to fire the rules and return number of rules fired.
+   * This method is used to fire the rules and RulesResponse
    *
-   * @param rulesRequestParams - All the parameter required to fire the rule
-   * @param returnedFactsClass - List of class for facts returned from session.
-   * @return RulesResponse - Number of rules fired and name of rules fired
+   * @param rulesRequest - All the parameter required to fire the rule
+   * @return RulesResponse - Number of rules fired ,name of rules fired and facts from session
    */
   @Override
-  public RulesResponse fireRules(RulesRequest rulesRequestParams) {
+  public RulesResponse fireRules(RulesRequest rulesRequest) {
 
     logger.traceEntry("START - method - [fireRules(RulesRequest)]");
     logger.traceExit("END - method - [fireRules(RulesRequest)]");
-    return this.fireRules(rulesRequestParams, null);
+    return this.fireRules(rulesRequest, null);
   }
 
   /**
@@ -48,8 +47,7 @@ public class RulesEngineImpl implements RulesEngine {
    * @param returnedFactsClass - List of class for facts returned from session.
    * @return RulesResponse
    */
-  @Override
-  public RulesResponse fireRules(
+  private RulesResponse fireRules(
       RulesRequest rulesRequestParams, List<Class<?>> returnedFactsClass) {
 
     logger.traceEntry("START - method - [fireRules(RulesRequest,List<Class>)]");
@@ -61,45 +59,64 @@ public class RulesEngineImpl implements RulesEngine {
 
     if (null == rulesRequestParams) {
 
-      logger.error("Missing mandatory details in rulesRequest to run the rules");
+      logger.error("RulesRequest is mandatory");
 
-      throw new RulesApiException("Missing mandatory details in rulesRequest to run the rules");
+      throw new RulesApiException("RulesRequest is mandatory");
     }
 
-    // Using a default stateful session in case session type is not given OR session type is stateful
-    if (null == rulesRequestParams.getSessionType()
-        || rulesRequestParams.getSessionType() == SessionType.STATEFUL) {
+    try {
+      // Using a default stateful session in case session type is not given OR session type is stateful
+      if (null == rulesRequestParams.getSessionType()
+          || rulesRequestParams.getSessionType() == SessionType.STATEFUL) {
 
-      kSession = rulesEngineHelper.getStatefulKieSession(rulesRequestParams);
+        kSession = rulesEngineHelper.getStatefulKieSession(rulesRequestParams);
 
-      if (null == kSession) {
-        logger.error("Can not instantiate KieSession.Please check configuration");
-        throw new RulesApiException("Can not instantiate KieSession.Please check configuration");
+        if (null == kSession) {
+          logger.error("Can not instantiate KieSession.Please check configuration");
+          throw new RulesApiException("Can not instantiate KieSession.Please check configuration");
+        }
+
+        rulesResponse =
+            rulesEngineHelper.fireStatefulRules(kSession, rulesRequestParams, returnedFactsClass);
+
       }
 
-      rulesResponse =
-          rulesEngineHelper.fireStatefulRules(kSession, rulesRequestParams, returnedFactsClass);
+      // If session type passed is state less
+      else if (rulesRequestParams.getSessionType() == SessionType.STATELESS) {
 
-    }
+        StatelessKieSession statelessKieSession =
+            rulesEngineHelper.getStatelessKieSession(rulesRequestParams);
 
-    // If session type passed is state less
-    else if (rulesRequestParams.getSessionType() == SessionType.STATELESS) {
+        if (null == statelessKieSession) {
+          logger.error("Can not instantiate stateless KieSession.Please check configuration");
+          throw new RulesApiException(
+              "Can not instantiate stateless KieSession.Please check configuration");
+        }
 
-      StatelessKieSession statelessKieSession =
-          rulesEngineHelper.getStatelessKieSession(rulesRequestParams);
-
-      if (null == statelessKieSession) {
-        logger.error("Can not instantiate stateless KieSession.Please check configuration");
-        throw new RulesApiException(
-            "Can not instantiate stateless KieSession.Please check configuration");
+        rulesResponse =
+            rulesEngineHelper.fireRuleStateless(
+                statelessKieSession, rulesRequestParams, returnedFactsClass);
       }
+      logger.info(rulesResponse);
+      logger.traceExit("END - method - [fireRules(RulesRequest,List<Class>)]");
 
-      rulesResponse =
-          rulesEngineHelper.fireRuleStateless(
-              statelessKieSession, rulesRequestParams, returnedFactsClass);
+    } catch (Exception ex) {
+      if (ex instanceof RulesApiException) {
+
+        throw ex;
+      } else {
+        throw new RulesApiException(ex.getMessage(), ex);
+      }
     }
-    logger.info(rulesResponse);
-    logger.traceExit("END - method - [fireRules(RulesRequest,List<Class>)]");
     return rulesResponse;
+  }
+
+  @Override
+  public List<Object> filterFacts(List<Object> objectList, List<Class<?>> returnedFactsClass) {
+
+    return objectList
+        .stream()
+        .filter(element -> returnedFactsClass.contains(element.getClass()))
+        .collect(Collectors.toList());
   }
 }

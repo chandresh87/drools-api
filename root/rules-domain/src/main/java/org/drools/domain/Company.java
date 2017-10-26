@@ -32,4 +32,19 @@ public class Company {
   public void setEmployeeList(List<Employee> employeeList) {
     this.employeeList = employeeList;
   }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder
+        .append("Company [name=")
+        .append(name)
+        .append(", employeeList=")
+        .append(employeeList)
+        .append("]");
+    return builder.toString();
+  }
 }

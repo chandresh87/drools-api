@@ -6,7 +6,9 @@ import org.drools.domain.Promotion;
 import com.drools.domain.enums.SalaryIncrement
 import com.drools.domain.enums.Rating
 
+dialect "mvel"
 dialect "java" ;
+
 
 rule "default"
 when
@@ -55,4 +57,11 @@ then
   insert($promotion);
   channels["send-channel"].send($promotion);
 
+end
+
+rule "Print Employee name entitled for promotion"
+when
+$p:  Promotion()
+then
+System.out.println("Employee Name is " +$p.empID + $p.empName);
 end

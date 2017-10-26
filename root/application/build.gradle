@@ -30,6 +30,8 @@ dependencies {
     compile group: 'com.rules', name: 'rule-api', version:'1.0.0' 
     compile('org.springframework.boot:spring-boot-starter-web')
     
+  
+compile  'org.springframework.boot:spring-boot-starter-actuator'
    
     
 	testCompile('org.springframework.boot:spring-boot-starter-test')   

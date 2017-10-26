@@ -25,22 +25,40 @@ artifacts {
   archives file: file("build/libs/rule-test-${version}.jar"), name: "rule-test", type: "jar"
 }
 
-task apiJar(type: Jar, description: "Creates the Rule Api JAR ." ) {  
+task apiJar(type: Jar, description: "Creates the Rule Api JAR ." ,dependsOn: ['javadoc','classes']) {  
 
     from(sourceSets.main.output) {  
-        include "rules/api/**" 
-      
-         archiveName = "rule-api-${version}.jar"
-    }  
+        include "rules/api/**"   
+    } 
+    
+     from(javadoc.destinationDir)
+     {
+       include "rules/api/**" 
+     }
+     
+    from (sourceSets.main.allSource)
+    {
+      include "rules/api/**"   
+    }
+      archiveName = "rule-api-${version}.jar"
 }
 
-task testJar(type: Jar , description: "Creates the Rule Test JAR .") {  
+task testJar(type: Jar , description: "Creates the Rule Test JAR ." ,dependsOn: ['javadoc','classes']) {  
 
     from(sourceSets.main.output) {  
-        include "rules/test/**" 
+        include "rules/test/**"  
+    }  
+ 
+    from(javadoc.destinationDir)
+     {
+      include "rules/test/**" 
+     }
      
-         archiveName = "rule-test-${version}.jar"
- }  
+     from (sourceSets.main.allSource)
+    {
+      include "rules/test/**" 
+    }
+    archiveName = "rule-test-${version}.jar"
 }
 
 

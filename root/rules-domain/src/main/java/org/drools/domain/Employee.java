@@ -76,4 +76,28 @@ public class Employee {
   public void setTax(int tax) {
     this.taxRate = tax;
   }
+  /* (non-Javadoc)
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder
+        .append("Employee [empID=")
+        .append(empID)
+        .append(", empName=")
+        .append(empName)
+        .append(", salary=")
+        .append(salary)
+        .append(", rating=")
+        .append(rating)
+        .append(", increment=")
+        .append(increment)
+        .append(", taxRate=")
+        .append(taxRate)
+        .append(", nino=")
+        .append(nino)
+        .append("]");
+    return builder.toString();
+  }
 }

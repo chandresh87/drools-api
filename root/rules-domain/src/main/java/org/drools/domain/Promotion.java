@@ -32,4 +32,18 @@ public class Promotion {
   public void setEmpName(String empName) {
     this.empName = empName;
   }
+  /* (non-Javadoc)
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder
+        .append("Promotion [empID=")
+        .append(empID)
+        .append(", empName=")
+        .append(empName)
+        .append("]");
+    return builder.toString();
+  }
 }

@@ -10,17 +10,33 @@ public class RulesApiException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;
 
-  private final String errorMessage;
-
-  /** @param message */
+  /**
+   * Call Runtime exception with message
+   *
+   * @param message - Error message
+   */
   public RulesApiException(String message) {
-    super();
-    this.errorMessage = message;
+    super(message);
   }
 
-  /** @return the message */
+  /**
+   * Call Runtime exception with message and cause.
+   *
+   * @param message - Error Message
+   * @param cause - Exception Cause
+   */
+  public RulesApiException(String message, Throwable cause) {
+    super(message, cause);
+  }
+
+  /** Returns a string consisting of the name, code, message and cause for this exception. */
   @Override
-  public String getMessage() {
-    return errorMessage;
+  public String toString() {
+    StringBuilder str = new StringBuilder();
+    str.append("\nName : " + this.getClass().getSimpleName());
+    str.append("\nMessage : " + this.getMessage());
+    if (this.getCause() != null) str.append("\nCause : " + this.getCause());
+
+    return str.toString();
   }
 }

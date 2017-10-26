@@ -14,6 +14,7 @@
 
  <kbase name="KBase" default="true" packages="*">
      <ksession name="KSession" type="stateful" default="true"/>
+     <ksession name="statelesssession" type="stateless" default="true"/>
  </kbase>
  
  <!--  <kbase name="rules.common"  includes="common.base" packages="rules.common">

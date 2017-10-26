@@ -25,6 +25,7 @@ public class RuleAgendaListener implements AgendaEventListener {
 
   private Logger log = LogManager.getLogger(this);
 
+  //List of names of rules fired
   private List<String> rulesFired = new ArrayList<>();
 
   /* (non-Javadoc)

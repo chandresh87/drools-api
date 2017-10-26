@@ -1,30 +1,30 @@
 /** */
-package rules.api.message;
+package rules.test.base;
 
 import java.util.List;
 
 /**
- * This class is responsible for sending back the response from rules engine
+ * This class holds the response data from rules engine.
  *
  * @author chandresh.mishra
  */
-public class RulesResponse {
+public class RuleTestResponse {
 
   // Number of rules fired
   private int numberOfRulesFired;
 
-  // List of objects returned from the from rule engine
+  // List of objects from session
   private List<Object> factsFromSession;
 
-  // List of rules name fired
+  // List of rules fired
   private List<String> nameOfRulesFired;
 
   /**
    * @param numberOfRulesFired - Number of rules fired
-   * @param factsFromSession - Facts returned from the engine
+   * @param factsFromSession - Facts returned from the session
    * @param rulesFired - Name of rules fired
    */
-  public RulesResponse(
+  public RuleTestResponse(
       int numberOfRulesFired, List<Object> factsFromSession, List<String> rulesFired) {
 
     this.numberOfRulesFired = numberOfRulesFired;

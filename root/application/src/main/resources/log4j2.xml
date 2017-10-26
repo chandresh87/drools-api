@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="info">
 	<Properties>
-		<Property name="basePath">C:\\Chandresh_Documents\\DroolsProject\\logs
+		<Property name="basePath">C:\\Workspaces\\Drools_Logs
 		</Property>
 	</Properties>
 

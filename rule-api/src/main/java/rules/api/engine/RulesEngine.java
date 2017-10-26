@@ -12,22 +12,19 @@ import rules.api.message.RulesResponse;
 public interface RulesEngine {
 
   /**
-   * This method is used to fire the rules and return number of rules fired.
+   * This method is used to fire the rules and returns the RulesResponse.
    *
-   * @param rulesRequestParams - All the parameter required to fire the rule
-   * @param returnedFactsClass - List of class for facts returned from session.
-   * @return integer - Number of rules fired
-   */
-  public RulesResponse fireRules(RulesRequest rulesRequestParams);
-
-  /**
-   * This method is used to fire the rules and return the response containing number of rules fired
-   * and requested facts from the session.
-   *
-   * @param rulesRequestParams - All the parameter required to fire the rule
-   * @param returnedFactsClass - List of class for facts returned from session.
+   * @param rulesRequest - All the parameter required to fire the rule
    * @return RulesResponse
    */
-  public RulesResponse fireRules(
-      RulesRequest rulesRequestParams, List<Class<?>> returnedFactsClass);
+  public RulesResponse fireRules(RulesRequest rulesRequest);
+
+  /**
+   * This method is used to filter the facts using the type of object
+   *
+   * @param objectList - List of object passed for filtration
+   * @param returnedFactsClass - List of object class that need to be filtered
+   * @return List
+   */
+  public List<Object> filterFacts(List<Object> objectList, List<Class<?>> returnedFactsClass);
 }
