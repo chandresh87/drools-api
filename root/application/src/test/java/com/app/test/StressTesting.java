@@ -1,8 +1,6 @@
 /** */
 package com.app.test;
 
-import com.drools.service.EmployeeService;
-import com.drools.service.EmployeeServiceImpl;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,16 +13,20 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.drools.domain.Employee;
-import org.drools.domain.Promotion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import rules.api.engine.RulesEngine;
-import rules.api.enums.SessionType;
-import rules.api.exception.RulesApiException;
-import rules.api.message.RulesRequest;
-import rules.api.message.RulesResponse;
+import uk.gov.hmrc.application.rules.domain.Employee;
+import uk.gov.hmrc.application.rules.domain.Promotion;
+import uk.gov.hmrc.application.rules.service.EmployeeService;
+import uk.gov.hmrc.application.rules.service.EmployeeServiceImpl;
+import uk.gov.hmrc.itmp.service.common.rules.api.engine.RulesEngine;
+import uk.gov.hmrc.itmp.service.common.rules.api.enums.SessionType;
+import uk.gov.hmrc.itmp.service.common.rules.api.exception.RulesApiException;
+import uk.gov.hmrc.itmp.service.common.rules.api.message.RulesRequest;
+import uk.gov.hmrc.itmp.service.common.rules.api.message.RulesRequest.RulesRequestBuilder;
+import uk.gov.hmrc.itmp.service.common.rules.api.message.RulesResponse;
+import uk.gov.hmrc.itmp.service.common.rules.api.utils.RulesUtils;
 
 /** @author chandresh.mishra */
 public class StressTesting extends BaseTest {
@@ -44,7 +46,7 @@ public class StressTesting extends BaseTest {
     factsReturned.add(Promotion.class);
 
     for (int count = 0; count < 50; count++) {
-      RulesRequest droolsParam = populateData();
+      RulesRequest droolsParam = populateData().build();
       Future<RulesResponse> future =
           executorService.submit(
               new Callable() {
@@ -83,7 +85,7 @@ public class StressTesting extends BaseTest {
               new Callable() {
                 public RulesResponse call() throws Exception {
 
-                  RulesRequest droolsParam = populateData();
+                  RulesRequest droolsParam = populateData().build();
                   RulesResponse droolsResponse = rulesEngine.fireRules(droolsParam);
 
                   Employee employee = (Employee) droolsParam.getFacts().get(0);
@@ -108,7 +110,7 @@ public class StressTesting extends BaseTest {
   public void multithreadedEnvTest_withSameObject()
       throws InterruptedException, ExecutionException {
 
-    RulesRequest droolsParam = populateData();
+    RulesRequest droolsParam = populateData().build();
     List<Class> factsReturned = new ArrayList<>();
     //factsReturned.add(Employee.class);
 
@@ -142,16 +144,16 @@ public class StressTesting extends BaseTest {
   public void testNullFacts()
       throws NoSuchMethodException, SecurityException, IllegalAccessException,
           IllegalArgumentException, InvocationTargetException, InstantiationException {
-    RulesRequest droolsParam = new RulesRequest();
+    RulesRequest droolsParam = new RulesRequest.RulesRequestBuilder().build();
     RulesResponse droolsResponse = rulesEngine.fireRules(droolsParam);
     Assert.assertEquals(droolsResponse.getNumberOfRulesFired(), 1);
   }
 
   @Test
   public void testReturnAllFacts() {
-    RulesRequest droolsParam = populateData();
-    droolsParam.setSessionName("rules.employee.increment.session");
-    droolsParam.setGlobalElement(null);
+    RulesRequest droolsParam =
+        populateData().sessionName("rules.employee.increment.session").globalElement(null).build();
+
     RulesResponse droolsResponse = rulesEngine.fireRules(droolsParam);
     Assert.assertEquals(droolsResponse.getNumberOfRulesFired(), 4);
     Assert.assertEquals(droolsResponse.getFactsFromSession().size(), 1);
@@ -160,7 +162,7 @@ public class StressTesting extends BaseTest {
 
   @Test
   public void testReturnSpecificFact_whichIsNotPresent() {
-    RulesRequest droolsParam = populateData();
+    RulesRequest droolsParam = populateData().build();
 
     List<Class<?>> returnedFactsClass = new ArrayList<>();
     returnedFactsClass.add(Promotion.class);
@@ -172,27 +174,35 @@ public class StressTesting extends BaseTest {
 
   @Test
   public void testReturnSpecificFact_whichIsPresent() {
-    RulesRequest droolsParam = populateData();
-    droolsParam.setSessionName("rules.employee.increment.statelesssession");
-    droolsParam.setSessionType(SessionType.STATELESS);
+    RulesRequest droolsParam =
+        populateData()
+            .sessionName("rules.employee.increment.statelesssession")
+            .sessionType(SessionType.STATELESS)
+            .build();
 
     List<Class<?>> returnedFactsClass = new ArrayList<>();
     returnedFactsClass.add(Promotion.class);
 
     RulesResponse droolsResponse = rulesEngine.fireRules(droolsParam);
     List<Object> filteredFacts =
-        rulesEngine.filterFacts(droolsResponse.getFactsFromSession(), returnedFactsClass);
+        RulesUtils.filterFacts(droolsResponse.getFactsFromSession(), returnedFactsClass);
     Assert.assertEquals(droolsResponse.getNumberOfRulesFired(), 4);
     Assert.assertEquals(droolsResponse.getFactsFromSession().size(), 1);
     Assert.assertTrue(
-        filteredFacts.get(0).getClass().toString().equals("class org.drools.domain.Promotion"));
+        filteredFacts
+            .get(0)
+            .getClass()
+            .toString()
+            .equals("class uk.gov.hmrc.application.rules.domain.Promotion"));
   }
 
   @Test
   public void testReturnAllPresentFact() {
-    RulesRequest droolsParam = populateData();
-    droolsParam.setSessionName("rules.employee.increment.statelesssession");
-    droolsParam.setSessionType(SessionType.STATELESS);
+    RulesRequest droolsParam =
+        populateData()
+            .sessionName("rules.employee.increment.statelesssession")
+            .sessionType(SessionType.STATELESS)
+            .build();
 
     RulesResponse droolsResponse = rulesEngine.fireRules(droolsParam);
     Assert.assertEquals(droolsResponse.getNumberOfRulesFired(), 4);
@@ -201,10 +211,13 @@ public class StressTesting extends BaseTest {
 
   @Test(enabled = false)
   public void testCommonRules() {
-    RulesRequest droolsParam = populateData();
-    droolsParam.setKieBasename("rules.common");
-    droolsParam.setSessionType(SessionType.STATELESS);
-    droolsParam.setBuildSessionByKieBase(true);
+    RulesRequest droolsParam =
+        populateData()
+            .kieBasename("rules.common")
+            .buildSessionByKieBase(true)
+            .sessionType(SessionType.STATELESS)
+            .build();
+
     int droolsResponse = rulesEngine.fireRules(droolsParam).getNumberOfRulesFired();
     Assert.assertEquals(droolsResponse, 1);
   }
@@ -212,10 +225,13 @@ public class StressTesting extends BaseTest {
   @Test(enabled = false)
   public void testCommonRuleReload() {
     //while (true) {
-    RulesRequest droolsParam = populateData();
-    droolsParam.setKieBasename("rules.common");
-    droolsParam.setSessionType(SessionType.STATELESS);
-    droolsParam.setBuildSessionByKieBase(true);
+    RulesRequest droolsParam =
+        populateData()
+            .kieBasename("rules.common")
+            .buildSessionByKieBase(true)
+            .sessionType(SessionType.STATELESS)
+            .build();
+
     int droolsResponse = rulesEngine.fireRules(droolsParam).getNumberOfRulesFired();
     Assert.assertEquals(droolsResponse, 1);
     // }
@@ -224,7 +240,7 @@ public class StressTesting extends BaseTest {
   @Test
   public void testReturnedRuleNames() {
 
-    RulesRequest rulesRequest = populateData();
+    RulesRequest rulesRequest = populateData().build();
     RulesResponse rulesResponse = rulesEngine.fireRules(rulesRequest);
     rulesResponse.getNameOfRulesFired();
     Assert.assertEquals(rulesResponse.getNumberOfRulesFired(), 2);
@@ -233,9 +249,11 @@ public class StressTesting extends BaseTest {
 
   @Test(expectedExceptions = RulesApiException.class)
   public void testExceptionHandling() {
-    RulesRequest droolsParam = populateData();
-    droolsParam.setSessionName("rules.employee.increment.statelesssession");
-    droolsParam.setSessionType(SessionType.STATEFUL);
+    RulesRequest droolsParam =
+        populateData()
+            .sessionName("rules.employee.increment.statelesssession")
+            .sessionType(SessionType.STATEFUL)
+            .build();
 
     RulesResponse droolsResponse = rulesEngine.fireRules(droolsParam);
     Assert.assertEquals(droolsResponse.getNumberOfRulesFired(), 3);
@@ -252,16 +270,27 @@ public class StressTesting extends BaseTest {
 
   @Test(expectedExceptions = RulesApiException.class)
   public void testExceptionHandlingWithUnknownSession() {
-    RulesRequest droolsParam = populateData();
-    droolsParam.setSessionName("rules.employee.increment.statelesssession123");
-    droolsParam.setSessionType(SessionType.STATEFUL);
+    RulesRequest droolsParam =
+        populateData()
+            .sessionName("rules.employee.increment.statelesssession123")
+            .sessionType(SessionType.STATEFUL)
+            .build();
+    ;
 
     RulesResponse droolsResponse = rulesEngine.fireRules(droolsParam);
     Assert.assertEquals(droolsResponse.getNumberOfRulesFired(), 3);
     Assert.assertEquals(droolsResponse.getFactsFromSession().size(), 1);
   }
 
-  private RulesRequest populateData() {
+  @Test(expectedExceptions = UnsupportedOperationException.class)
+  public void testImmutability() {
+    RulesRequest rulesRequest = populateData().build();
+    RulesResponse rulesResponse = rulesEngine.fireRules(rulesRequest);
+
+    rulesResponse.getNameOfRulesFired().add("Dummy Rules");
+  }
+
+  private RulesRequestBuilder populateData() {
 
     Employee employee = new Employee();
     employee.setEmpID(empId);
@@ -276,18 +305,18 @@ public class StressTesting extends BaseTest {
 
     Map<String, Object> globalService = new HashMap();
     globalService.put("employeeService", EmployeeService);
+    globalService.put("startingLimit", 5000);
 
-    RulesRequest rulesRequest =
+    RulesRequestBuilder rulesRequestBuilder =
         new RulesRequest.RulesRequestBuilder()
             .facts(facts)
             .buildSessionByKieBase(false)
             .sessionName("rules.employee.tax.session")
             .sessionType(SessionType.STATEFUL)
-            .globalService(globalService)
-            .kieBasename("rules.employee.tax")
-            .build();
+            .globalElement(globalService)
+            .kieBasename("rules.employee.tax");
     ++salary;
     ++empId;
-    return rulesRequest;
+    return rulesRequestBuilder;
   }
 }

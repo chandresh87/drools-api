@@ -1,0 +1,99 @@
+package performance.rules
+
+
+import uk.gov.hmrc.application.rules.domain.Employee;
+import uk.gov.hmrc.application.rules.domain.Promotion;
+import uk.gov.hmrc.application.rules.enums.SalaryIncrement
+import uk.gov.hmrc.application.rules.enums.Rating
+
+dialect "mvel"
+dialect "java" ;
+
+
+rule "default"
+ //activation-group  "Salary Increment exclusive"
+ //agenda-group "Salary Increment"
+ 
+//enabled false   // This will disable the rule
+when
+
+then
+System.out.println("Hello Drools");
+
+end
+
+rule "A grade"
+//agenda-group "Salary Increment"
+when
+$i: Employee(rating==Rating.ONE.getRating())
+then
+$i.setIncrement(SalaryIncrement.AGRADEINCREMENT.getIncrement());
+
+end
+
+rule "B grade"
+//agenda-group "Salary Increment"
+when
+$i: Employee(rating==Rating.TWO.getRating())
+then
+$i.setIncrement(SalaryIncrement.BGRADEINCREMENT.getIncrement());
+
+end
+
+rule "C grade"
+//agenda-group "Salary Increment"
+when
+$i: Employee(rating==Rating.THREE.getRating())
+then
+$i.setIncrement(SalaryIncrement.CGRADEINCREMENT.getIncrement());
+end
+
+
+rule "D grade"
+//agenda-group "Salary Increment"
+when
+$i: Employee(rating==Rating.FOUR.getRating())
+then
+$i.setIncrement(SalaryIncrement.DGRADEINCREMENT.getIncrement());
+end
+
+rule "Star of the year"
+//agenda-group "Salary Increment special"
+salience 100
+
+when
+$i: Employee(rating==Rating.THREE.getRating() ,isStarAwardReceived())
+then
+$i.setRating(2);
+update($i);
+end
+
+rule "Entitle for promotion"
+//agenda-group "promotion"
+when
+$i: Employee(rating==Rating.ONE.getRating())
+then
+  Promotion $promotion=new Promotion($i.getEmpID(),$i.getEmpName());
+  insert($promotion);
+  channels["send-channel"].send($promotion);
+
+end
+
+rule "Print Employee name entitled for promotion"
+//agenda-group "promotion"
+activation-group  "report"
+when
+$p:  Promotion()
+then
+System.out.println("Employee Name is " +$p.empID + $p.empName);
+end
+
+rule "Reporting"
+//agenda-group "promotion"
+activation-group  "report"
+//salience 5
+when
+$p:  Promotion()
+then
+System.out.println("Employee Name is " +$p.empID + $p.empName);
+end

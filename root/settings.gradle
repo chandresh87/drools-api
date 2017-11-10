@@ -6,5 +6,5 @@ include ':application'
 
 //project(':rules-api').projectDir = "$rootDir/rules-api" as File
 project(':application-rule').projectDir = "$rootDir/application-rules" as File
-project(':rules-domain').projectDir = "$rootDir/rules-domain" as File
+project(':application-service-data').projectDir = "$rootDir/application-service-data" as File
 project(':application').projectDir = "$rootDir/application" as File

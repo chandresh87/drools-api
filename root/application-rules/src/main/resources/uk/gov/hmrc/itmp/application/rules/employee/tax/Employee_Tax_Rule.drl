@@ -1,0 +1,48 @@
+package tax.rules
+
+
+import uk.gov.hmrc.application.rules.domain.Employee;
+import uk.gov.hmrc.application.rules.service.EmployeeService
+import uk.gov.hmrc.application.rules.enums.Tax
+
+dialect "java" ;
+
+global  EmployeeService employeeService;
+global  Integer startingLimit;
+
+rule "Starting rate limit "
+when
+$i: Employee(salary<=5000)
+then
+$i.setTax(Tax.STARTING_TAX.getTax());
+end
+
+rule "Basic rate band "
+when
+$i: Employee(salary>5000 ,salary<=32000)
+then
+$i.setTax(Tax.BASIC_TAX.getTax());
+
+end
+
+rule "Higher rate band "
+when
+$i: Employee(salary>32000, salary<=150000)
+then
+$i.setTax(Tax.HIGHER_TAX.getTax());
+end
+
+
+rule "Additional rate band"
+when
+$i: Employee( salary>150000)
+then
+$i.setTax(Tax.ADDITIONAL_TAX.getTax());
+end
+
+rule "Populate Nino"
+when
+$i: Employee()
+then
+$i.setNino(employeeService.getNino($i.getEmpID())+"G");
+end

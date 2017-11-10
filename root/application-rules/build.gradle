@@ -1,19 +1,8 @@
-group = 'com.rules'
-
-ext.droolsVersion='7.3.0.Final'
-
 dependencies {
 
-    compile project(':rules-domain')
-  
-    compile 'org.drools:drools-core:droolsVersion'
-    compile 'org.drools:drools-compiler:droolsVersion'
-    compile 'org.kie:kie-api:droolsVersion'
-    compile  'org.mvel:mvel2:2.3.1.Final'
-   
     testCompile 'org.testng:testng:6.8'
     testCompile 'org.mockito:mockito-all:1.9.5'
-    testCompile 'com.rules:rule-test:1.0.0' 
+    testCompile 'uk.gov.hmrc.itmp:rule-api-test:1.0.0' 
    
 }
 

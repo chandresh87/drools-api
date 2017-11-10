@@ -24,10 +24,10 @@
 		</Console>
 	</Appenders>
 
-	<Loggers>
-		<Logger name="com.rules.api" level="debug" additivity="true">
+ <Loggers>
+			<!--<Logger name="com.rules.api" level="debug" additivity="true">
 			<appender-ref ref="fileLogger" level="info" />
-		</Logger>
+		</Logger> -->
 		
 		 <logger name="org.springframework.core.env.StandardEnvironment">
            <appender-ref ref="fileLogger" level="info" />

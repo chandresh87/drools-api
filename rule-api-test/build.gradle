@@ -1,0 +1,47 @@
+plugins {
+  id 'com.github.sherter.google-java-format' version '0.6'
+  id "nebula.ospackage" version "4.4.0"	
+}
+apply plugin: 'java-library'
+apply plugin: 'maven'
+
+group = 'uk.gov.hmrc.itmp'
+version = '1.0.0'
+
+ sourceCompatibility = 1.8
+ targetCompatibility = 1.8
+ 
+ext{
+
+drools_version='7.4.1.Final'
+mvel2_version='2.4.0.Final' 
+commons_collections4_version='4.1'
+log4j_version='2.8.2'
+testng_version='6.8'
+mockito_version='1.9.5'
+
+}
+
+repositories {
+     maven { url 'http://10.133.49.250:8081/repository/nps-itmp/' }
+     mavenLocal()
+}
+
+dependencies {
+   
+    api "org.drools:drools-core:$drools_version"
+    api "org.drools:drools-compiler:$drools_version"
+    api "org.kie:kie-api:$drools_version"
+    api  "org.mvel:mvel2:$mvel2_version"
+    
+   
+    implementation "org.apache.commons:commons-collections4:$commons_collections4_version"
+    implementation "org.apache.logging.log4j:log4j-api:$log4j_version"
+    implementation "org.apache.logging.log4j:log4j-core:$log4j_version"
+    implementation 'commons-configuration:commons-configuration:1.6'
+    implementation 'com.google.googlejavaformat:google-java-format:1.4'
+    
+    testImplementation  "org.testng:testng:$testng_version"
+    testImplementation "org.mockito:mockito-all:$mockito_version"
+}
+

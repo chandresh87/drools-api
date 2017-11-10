@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Import;
-import rules.api.config.RulesConfig;
+import uk.gov.hmrc.itmp.service.common.rules.api.config.RulesConfig;
 
 @SpringBootApplication
 @Import(

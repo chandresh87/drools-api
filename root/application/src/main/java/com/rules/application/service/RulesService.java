@@ -1,19 +1,19 @@
 /** */
 package com.rules.application.service;
 
-import com.drools.service.EmployeeService;
-import com.drools.service.EmployeeServiceImpl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.drools.domain.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import rules.api.engine.RulesEngine;
-import rules.api.enums.SessionType;
-import rules.api.message.RulesRequest;
-import rules.api.message.RulesResponse;
+import uk.gov.hmrc.application.rules.domain.Employee;
+import uk.gov.hmrc.application.rules.service.EmployeeService;
+import uk.gov.hmrc.application.rules.service.EmployeeServiceImpl;
+import uk.gov.hmrc.itmp.service.common.rules.api.engine.RulesEngine;
+import uk.gov.hmrc.itmp.service.common.rules.api.enums.SessionType;
+import uk.gov.hmrc.itmp.service.common.rules.api.message.RulesRequest;
+import uk.gov.hmrc.itmp.service.common.rules.api.message.RulesResponse;
 
 /** @author chandresh.mishra */
 @Service
@@ -49,7 +49,7 @@ public class RulesService {
             .buildSessionByKieBase(false)
             .sessionName("rules.employee.tax.session")
             .sessionType(SessionType.STATEFUL)
-            .globalService(globalService)
+            .globalElement(globalService)
             .kieBasename("rules.employee.tax")
             .build();
 
